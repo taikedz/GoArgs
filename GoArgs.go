@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-    goargs.Hello("main")
+    goargs.SpotCheck()
 }
