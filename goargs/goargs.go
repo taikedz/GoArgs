@@ -1,49 +1,39 @@
 package goargs
 
-import "fmt"
-
-type Parser struct {
-    definitions []ArgumentGeneric
-}
-
-
-func (self Parser) AddArgument(arg ArgumentGeneric) {
-    self.definitions = append(self.definitions, arg)
-}
+import (
+    "fmt"
+    "os"
+)
 
 
-type ArgumentGeneric interface {
-    GetName() string
-    GetValueString() string
-    GetFlags() (string, rune)
-}
-
-type StrDef struct {
-    value string
+type VarDef struct {
     name string
-    longflag string
-    shortflag rune
+    value *string
+    defval string
 }
-func (self StrDef) GetName() string { return self.name }
-func (self StrDef) GetValueString() string { return self.value }
-func (self StrDef) GetFlags() (string, rune) { return self.longflag, self.shortflag }
+
+
+var definitions = []VarDef{}
+
+
+func StringArg(value *string, name string, defval string) {
+    definitions = append(definitions, VarDef{name, value, defval} )
+}
+
+func Parse() {
+    if len(os.Args) == 1 {
+        *definitions[0].value = definitions[0].defval
+    } else {
+        *definitions[0].value = os.Args[1]
+    }
+}
 
 // ---------
 
 func SpotCheck() {
-    var p = Parser{[]ArgumentGeneric{}}
-
-    myarg := StrDef{"alice", "name", "name", 'N'}
-
-    p.AddArgument( myarg )
-
-
-    fmt.Printf("%s -> %s\n", myarg.GetName(), myarg.GetValueString())
-
-    fmt.Println(p)
-
-    var holder []ArgumentGeneric
-    holder = append(holder, myarg)
-    fmt.Printf("%d/%d -> ", len(holder), cap(holder))
-    fmt.Println(holder)
+    var person string
+    StringArg(&person, "name", "nobody")
+    Parse()
+    fmt.Println(person)
+    fmt.Printf("%v\n", definitions)
 }
