@@ -33,35 +33,43 @@ func (self IntDef) Assign(value string) {
 }
 
 
-var definitions = []VarDef{}
+type Parser struct {
+    definitions []VarDef
+}
 
 
-func StringArg(value *string, name string, defval string) {
+func (p *Parser) StringArg(value *string, name string, defval string) {
     s := StringDef{name, value}
     *s.value = defval
-    definitions = append(definitions, s)
+    p.definitions = append(p.definitions, s)
 }
 
-func IntArg(value *int, name string, defval int) {
+func (p *Parser) IntArg(value *int, name string, defval int) {
     s := IntDef{name, value}
     *s.value = defval
-    definitions = append(definitions, s)
+    p.definitions = append(p.definitions, s)
 }
 
-func Parse() {
+func (p *Parser) Parse() {
     for i, str := range os.Args[1:] {
-        definitions[i].Assign(str)
+        if i >= len(p.definitions) { return }
+
+        p.definitions[i].Assign(str)
     }
 }
 
 // ---------
 
 func SpotCheck() {
+    //*
     var person string
     var age int
-    StringArg(&person, "name", "nobody")
-    IntArg(&age, "age", -1)
-    Parse()
+    var par Parser
+    par.StringArg(&person, "name", "nobody")
+    par.IntArg(&age, "age", -1)
+    par.Parse()
+
+    fmt.Printf("Definitions: %v\n", par.definitions)
     fmt.Printf("%s -> %d\n", person, age)
-    fmt.Printf("%v\n", definitions)
+    // */
 }
