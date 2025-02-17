@@ -1,5 +1,10 @@
 package main
 
+/* Example file to run to see this library in action.
+
+This is not intended to be a runnable project, but a dependency.
+*/
+
 import (
     "fmt"
     "net.taikedz.goargs/goargs"

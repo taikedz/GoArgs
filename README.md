@@ -1,10 +1,8 @@
 # GoArgs - a better Go Arguments Parser
 
 Go's default `flag` library is rudimentary; GoArgs aims to provide a simple yet more featureful module for parsing arguments.
-The usage style matches the standard `flag` library for compatibility.
-The codebase remains small, ensuring it remains easy to audit.
-
-Notably:
+The usage style matches the standard `flag` library for compatibility, though it is not aiming to be a drop-in replacement.
+The codebase remains small, ensuring it is easy to audit.
 
 Compatibility:
 
@@ -17,12 +15,15 @@ Improved features:
 * Parser operates on any developer-specified token list (not just `os.Args`)
 * Parser recognises `--` as end of direct arguments, and stores subsequent raw tokens
 * Parser can opt to ignore unknown flags, or return error on unknown arguments, as-needed.
+* Unpacking methods `Unpack()` and `UnpackExactly()` help extract and assign positional arguments
 * Long-name flags are specified only with double-hyphen notation (to support short flags combination notations)
 
 Yet to implement:
 
 * Flag event function (`flag.Func` equivalent)
 * Bool flag counter (`flag.BoolFunc` equivalent)
+* Additional types as found in `flag` standard lib
+* StringChoices argument type
 * Usage strings
 * Help display
 * Optional short flags (rune `-` to mean "no short flag")
@@ -89,6 +90,9 @@ func main() {
         // The extra args after "--" are passed along directly, raw
         ServerCommand(recv_p.PassdownArgs)
         DoSave(file, server) // ...
+    } else {
+        fmt.Printf("Unknown action: %s", action)
+        os.Exit(10)
     }
 }
 ```

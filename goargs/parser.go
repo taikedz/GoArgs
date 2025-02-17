@@ -40,7 +40,7 @@ func (p *Parser) Arg(i int) (string, error) {
     }
 }
 
-func (p *Parser) ClearParsedData() {
+func (p *Parser) clearParsedData() {
     p.positionals = []string{}
     p.PassdownArgs = []string{}
 }
@@ -54,7 +54,7 @@ func (p *Parser) fromName(longname string) *VarDef {
     return nil
 }
 
-// Parse the program's CLI arguments.
+// Parse the program's CLI arguments. Must be called before accessing flags' variables.
 // If ignore_unknown is true, returns an error for unrecognised flags
 // If ignore_unknown is false, retains unrecognised flags in the positional arguments set
 func (p *Parser) ParseCliArgs(ignore_unknown bool) error {

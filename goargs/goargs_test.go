@@ -111,15 +111,15 @@ func Test_ParseArgs_Fail(t *testing.T) {
 	if err := parser.Parse([]string{"front", "--val"}, false); err == nil {
 		t.Errorf("Should have failed for --val ! Got instead: %s", value)
 	}
-	parser.ClearParsedData()
+	parser.clearParsedData()
 	
 	if err := parser.Parse([]string{"--num", "NaN"}, false); err == nil {
 		t.Errorf("Should have failed for --num ! Got instead: %d", number)
 	}
-	parser.ClearParsedData()
+	parser.clearParsedData()
 	
 	if err := parser.Parse([]string{"--unknown", "what"}, false); err == nil {
 		t.Errorf("Should have failed for --unknown ! Parser content is: %v", parser)
 	}
-	parser.ClearParsedData()
+	parser.clearParsedData()
 }
