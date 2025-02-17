@@ -2,6 +2,7 @@ package goargs
 
 import (
     "fmt"
+    "time"
     "strconv"
 )
 
@@ -19,6 +20,11 @@ func (p *Parser) StringArg(value *string, name string, defval string) {
     s := StringDef{name, value}
     *s.value = defval
     p.definitions = append(p.definitions, s)
+}
+func (p *Parser) StringVar(name string, defval string) *string {
+    var s string
+    p.StringArg(&s, name, defval)
+    return &s
 }
 
 
@@ -43,6 +49,11 @@ func (p *Parser) IntArg(value *int, name string, defval int) {
     *s.value = defval
     p.definitions = append(p.definitions, s)
 }
+func (p *Parser) IntVar(name string, defval int) *int {
+    var s int
+    p.IntArg(&s, name, defval)
+    return &s
+}
 
 
 // ======
@@ -66,6 +77,11 @@ func (p *Parser) FloatArg(value *float32, name string, defval float32) {
     *s.value = defval
     p.definitions = append(p.definitions, s)
 }
+func (p *Parser) FloatVar(name string, defval float32) *float32 {
+    var s float32
+    p.FloatArg(&s, name, defval)
+    return &s
+}
 
 
 // ======
@@ -77,13 +93,44 @@ type BoolDef struct {
 }
 func (self BoolDef) getName() string { return self.name }
 func (self BoolDef) assign(value string) error { return fmt.Errorf("Invalid operation") }
-func (self BoolDef) activate() {
-    *self.value = !self.defval
-}
+func (self BoolDef) activate() { *self.value = !self.defval }
 
 func (p *Parser) BoolArg(value *bool, name string, defval bool) {
     s := BoolDef{name, value, defval}
     *s.value = defval
     p.definitions = append(p.definitions, s)
+}
+func (p *Parser) BoolVar(name string, defval bool) *bool {
+    var s bool
+    p.BoolArg(&s, name, defval)
+    return &s
+}
+
+// ======
+
+type DurationDef struct {
+    name string
+    value *time.Duration
+}
+
+func (self DurationDef) getName() string { return self.name }
+func (self DurationDef) assign(value string) error {
+    if duration, err := time.ParseDuration(value); err != nil {
+        return err
+    } else {
+        *self.value = duration
+        return nil
+    }
+}
+
+func (p *Parser) DurationArg(value *time.Duration, name string, defval time.Duration) {
+    s := DurationDef{name, value}
+    *s.value = defval
+    p.definitions = append(p.definitions, s)
+}
+func (p *Parser) DurationVar(name string, defval time.Duration) *time.Duration {
+    var s time.Duration
+    p.DurationArg(&s, name, defval)
+    return &s
 }
 

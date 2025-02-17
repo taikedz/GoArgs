@@ -1,7 +1,6 @@
 package goargs
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -80,8 +79,26 @@ func Test_ParseArgs_Good(t *testing.T) {
 
 	CheckEqualArr(t, parser.Positionals, []string{"one", "two", "--unknown"})
 	CheckEqualArr(t, parser.PassdownArgs, []string{"alpha", "beta"})
+}
 
-	fmt.Println("Done.")
+func Test_ParseArgs_GetVar(t *testing.T) {
+	var parser Parser
+
+	name := parser.StringVar("name", "nobody")
+	age := parser.IntVar("age", -1)
+	height := parser.FloatVar("height", 0.0)
+	admit := parser.BoolVar("admit", false)
+
+	args := []string{"one", "--name", "Alex", "two", "--age", "20", "--height", "1.8", "--admit", "--unknown", "--", "alpha", "beta"}
+	if err := parser.Parse(args, true); err != nil {
+		t.Errorf("Failed parse: %v", err)
+		return
+	}
+
+	CheckEqual(t, *name, "Alex")
+	CheckEqual(t, *age, 20)
+	CheckEqual(t, *height, 1.8)
+	CheckEqual(t, *admit, true)
 }
 
 func Test_ParseArgs_Fail(t *testing.T) {

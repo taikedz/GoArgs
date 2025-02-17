@@ -6,20 +6,26 @@ The codebase remains small, ensuring it remains easy to audit.
 
 Notably:
 
+Compatibility:
+
+* Pass pointer into argument delcaration (`flag.<Type>Arg()` equivalents)
+* Create pointer from argument declaration (`flag.<Type>Var()` equivalents)
+
+Improved features:
+
 * Flags can appear intermixed with positional arguments
-* Long-name flags are specified with double-dash notation
 * Parser operates on any developer-specified token list (not just `os.Args`)
+* Parser recognises `--` as end of direct arguments, and stores subsequent raw tokens
 * Parser can opt to ignore unknown flags, or return error on unknown arguments, as-needed.
-* Parser recognises `--` as end of relevant arguments, and stores subsequent raw tokens
+* Long-name flags are specified only with double-hyphen notation (to support short flags)
 
 Yet to implement:
 
-* Pointer-creation (`flag.<type>Var()` equivalents)
 * Flag event function (`flag.Func` equivalent)
 * Usage strings
 * Help display
 * Optional short flags (rune `-` to mean "no short flag")
-* Short flags can be combined with single-dash notation
+* Short flags can be combined with single-hyphen notation (e.g. `-eux` for `-e -u -x`)
 
 ```go
 // Flags can appear before, after, or in between positionals
