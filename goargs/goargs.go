@@ -5,20 +5,25 @@ import (
     "os"
 )
 
-
-// FIXME - VarDef is not seen outside the package, make methods private
 type VarDef interface {
     getName() string
     assign(string) error
 }
 
 
+// A discrete Parser to hold a number of argument definitions.
+// Each Parser can receive a distinct set of value type pointers
+//  and be made to parse different sequences of argument tokens.
 type Parser struct {
     definitions []VarDef
-    positionals []string
-    passdown_args []string
+    // Non-flag tokens in the arguments
+    Positionals []string
+    // All tokens found after the first instance of `--`
+    PassdownArgs []string
 }
 
+// Look for a VarDef carying the given longname as its name, returning a pointer to that VarDef
+// If none is found returns nil
 func (p *Parser) fromName(longname string) *VarDef {
     for _, vdef := range p.definitions {
         if vdef.getName() == longname { return &vdef }
@@ -26,10 +31,14 @@ func (p *Parser) fromName(longname string) *VarDef {
     return nil
 }
 
+// Parse the program's CLI arguments.
+// If ignore_unknown is true, returns an error for unrecognised flags
+// If ignore_unknown is false, retains unrecognised flags in the positional arguments set
 func (p *Parser) ParseCliArgs(ignore_unknown bool) error {
     return p.Parse(os.Args[1:], ignore_unknown)
 }
 
+// Parse custom token sequence. See ParseCliArgs.
 func (p *Parser) Parse(args []string, ignore_unknown bool) error {
     for i := 0; i<len(args); i++ {
         token := args[i]
@@ -40,7 +49,7 @@ func (p *Parser) Parse(args []string, ignore_unknown bool) error {
             if longname == "" {
                 // We found the first delimiter for passdown arguments
                 // Retain them as such, and stop parsing
-                p.passdown_args = args[i+1:]
+                p.PassdownArgs = args[i+1:]
                 return nil
             }
             def_p = p.fromName(longname)
@@ -65,7 +74,7 @@ func (p *Parser) Parse(args []string, ignore_unknown bool) error {
             }
 
         } else {
-            p.positionals = append(p.positionals, token)
+            p.Positionals = append(p.Positionals, token)
         }
     }
 

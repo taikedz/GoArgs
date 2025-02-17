@@ -6,6 +6,8 @@ import (
 )
 
 func main() {
+    // Try with:
+    // go run GoArgs.go Bob --name Jay --age 12 --height 1.7 --admit 15 --debug -- There is more --oops
     var par goargs.Parser
 
     var person string
@@ -26,7 +28,17 @@ func main() {
 
     if(debug) {
         fmt.Printf("Parser: %v\n", par)
+        //return
     }
     fmt.Printf("%s (%.2f m) -> %d yo (%t)\n", person, height, age, admit)
+
+    var person2 string
+    var age2 int
+    remains, err := goargs.Unpack(par.Positionals, &person2, &age2)
+    if err != nil {
+        fmt.Printf("!! %v\n", err)
+        //return
+    }
+    fmt.Printf("%s -> %d\n || %v", person2, age2, remains)
 }
 

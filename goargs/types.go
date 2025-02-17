@@ -5,8 +5,49 @@ import (
     "strconv"
 )
 
+// Unpack arguments into a series of variables, and return any unassigned values.
+// Typically for use in conjunction with Parser.Positionals
+func Unpack(tokens []string, vars ...interface{}) ([]string, error) {
+    max := len(tokens)
+    if len(vars) < max {
+        max = len(vars)
+    }
+
+    for i := 0; i<max; i++ {
+        tok := tokens[i]
+        label := vars[i]
+
+        switch t := label.(type) {
+            default:
+                return nil, fmt.Errorf("Unsupported type: %t", t)
+            case *string:
+                // `label` is an interface, and cannot be directly dereferenced and assigned
+                //   so we performe some indirection via a new explicitly typed variable
+                var lab *string = label.(*string)
+                *lab = tok
+            case *int:
+                val, err := strconv.Atoi(tok)
+                if err != nil {
+                    return nil, fmt.Errorf("Could not parse int %s : %v", tok, err)
+                }
+                var lab *int = label.(*int)
+                *lab = val
+            case *float32:
+                float, err := strconv.ParseFloat(tok, 32)
+                if err != nil {
+                    return nil, fmt.Errorf("Could not parse int %s : %v", tok, err)
+                }
+                var lab *float32 = label.(*float32)
+                *lab = float32(float)
+        }
+    }
+
+    return tokens[max:], nil
+}
+
 
 // ======
+
 type StringDef struct {
     name string
     value *string
@@ -22,6 +63,7 @@ func (p *Parser) StringArg(value *string, name string, defval string) {
 
 
 // ======
+
 type IntDef struct {
     name string
     value *int
@@ -44,6 +86,7 @@ func (p *Parser) IntArg(value *int, name string, defval int) {
 
 
 // ======
+
 type FloatDef struct {
     name string
     value *float32
@@ -66,6 +109,7 @@ func (p *Parser) FloatArg(value *float32, name string, defval float32) {
 
 
 // ======
+
 type BoolDef struct {
     name string
     value *bool
