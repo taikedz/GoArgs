@@ -8,7 +8,7 @@ Notably:
 
 Compatibility:
 
-* Pass pointer into argument delcaration (`flag.<Type>Arg()` equivalents)
+* Pass pointer into argument delcaration (`flag.<Type>()` equivalents)
 * Create pointer from argument declaration (`flag.<Type>Var()` equivalents)
 
 Improved features:
@@ -17,11 +17,12 @@ Improved features:
 * Parser operates on any developer-specified token list (not just `os.Args`)
 * Parser recognises `--` as end of direct arguments, and stores subsequent raw tokens
 * Parser can opt to ignore unknown flags, or return error on unknown arguments, as-needed.
-* Long-name flags are specified only with double-hyphen notation (to support short flags)
+* Long-name flags are specified only with double-hyphen notation (to support short flags combination notations)
 
 Yet to implement:
 
 * Flag event function (`flag.Func` equivalent)
+* Bool flag counter (`flag.BoolFunc` equivalent)
 * Usage strings
 * Help display
 * Optional short flags (rune `-` to mean "no short flag")
@@ -73,7 +74,7 @@ func main() {
         var server string
         var decrypt bool
 
-        recv_p.BoolArg(&decrypt, "decrypt", false)
+        recv_p.Bool(&decrypt, "decrypt", false)
 
         // Detect flags, isolate positionals and extras
         if err := recv_p.Parse(moreargs, false); err != nil {

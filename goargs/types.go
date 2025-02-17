@@ -16,14 +16,14 @@ type StringDef struct {
 func (self StringDef) getName() string { return self.name }
 func (self StringDef) assign(value string) error { *self.value = value; return nil }
 
-func (p *Parser) StringArg(value *string, name string, defval string) {
+func (p *Parser) String(value *string, name string, defval string) {
     s := StringDef{name, value}
     *s.value = defval
     p.definitions = append(p.definitions, s)
 }
 func (p *Parser) StringVar(name string, defval string) *string {
     var s string
-    p.StringArg(&s, name, defval)
+    p.String(&s, name, defval)
     return &s
 }
 
@@ -44,14 +44,14 @@ func (self IntDef) assign(value string) error {
     return nil
 }
 
-func (p *Parser) IntArg(value *int, name string, defval int) {
+func (p *Parser) Int(value *int, name string, defval int) {
     s := IntDef{name, value}
     *s.value = defval
     p.definitions = append(p.definitions, s)
 }
 func (p *Parser) IntVar(name string, defval int) *int {
     var s int
-    p.IntArg(&s, name, defval)
+    p.Int(&s, name, defval)
     return &s
 }
 
@@ -72,14 +72,14 @@ func (self FloatDef) assign(value string) error {
     return nil
 }
 
-func (p *Parser) FloatArg(value *float32, name string, defval float32) {
+func (p *Parser) Float(value *float32, name string, defval float32) {
     s := FloatDef{name, value}
     *s.value = defval
     p.definitions = append(p.definitions, s)
 }
 func (p *Parser) FloatVar(name string, defval float32) *float32 {
     var s float32
-    p.FloatArg(&s, name, defval)
+    p.Float(&s, name, defval)
     return &s
 }
 
@@ -95,14 +95,14 @@ func (self BoolDef) getName() string { return self.name }
 func (self BoolDef) assign(value string) error { return fmt.Errorf("Invalid operation") }
 func (self BoolDef) activate() { *self.value = !self.defval }
 
-func (p *Parser) BoolArg(value *bool, name string, defval bool) {
+func (p *Parser) Bool(value *bool, name string, defval bool) {
     s := BoolDef{name, value, defval}
     *s.value = defval
     p.definitions = append(p.definitions, s)
 }
 func (p *Parser) BoolVar(name string, defval bool) *bool {
     var s bool
-    p.BoolArg(&s, name, defval)
+    p.Bool(&s, name, defval)
     return &s
 }
 
@@ -123,14 +123,14 @@ func (self DurationDef) assign(value string) error {
     }
 }
 
-func (p *Parser) DurationArg(value *time.Duration, name string, defval time.Duration) {
+func (p *Parser) Duration(value *time.Duration, name string, defval time.Duration) {
     s := DurationDef{name, value}
     *s.value = defval
     p.definitions = append(p.definitions, s)
 }
 func (p *Parser) DurationVar(name string, defval time.Duration) *time.Duration {
     var s time.Duration
-    p.DurationArg(&s, name, defval)
+    p.Duration(&s, name, defval)
     return &s
 }
 

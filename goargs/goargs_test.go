@@ -61,10 +61,10 @@ func Test_ParseArgs_Good(t *testing.T) {
 
 	var parser Parser
 
-	parser.StringArg(&name, "name", "nobody")
-	parser.IntArg(&age, "age", -1)
-	parser.FloatArg(&height, "height", 0.0)
-	parser.BoolArg(&admit, "admit", false)
+	parser.String(&name, "name", "nobody")
+	parser.Int(&age, "age", -1)
+	parser.Float(&height, "height", 0.0)
+	parser.Bool(&admit, "admit", false)
 
 	args := []string{"one", "--name", "Alex", "two", "--age", "20", "--height", "1.8", "--admit", "--unknown", "--", "alpha", "beta"}
 	if err := parser.Parse(args, true); err != nil {
@@ -105,8 +105,8 @@ func Test_ParseArgs_Fail(t *testing.T) {
 	var parser Parser
 	var value string
 	var number int
-	parser.StringArg(&value, "val", "nothing")
-	parser.IntArg(&number, "num", -1)
+	parser.String(&value, "val", "nothing")
+	parser.Int(&number, "num", -1)
 
 	if err := parser.Parse([]string{"front", "--val"}, false); err == nil {
 		t.Errorf("Should have failed for --val ! Got instead: %s", value)
