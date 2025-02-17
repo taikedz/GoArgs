@@ -77,7 +77,7 @@ func Test_ParseArgs_Good(t *testing.T) {
 	CheckEqual(t, height, 1.8)
 	CheckEqual(t, admit, true)
 
-	CheckEqualArr(t, parser.Positionals, []string{"one", "two", "--unknown"})
+	CheckEqualArr(t, parser.Args(), []string{"one", "two", "--unknown"})
 	CheckEqualArr(t, parser.PassdownArgs, []string{"alpha", "beta"})
 }
 

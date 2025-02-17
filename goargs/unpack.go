@@ -6,7 +6,7 @@ import (
 )
 
 // Unpack arguments into a series of variables, and return any unassigned values.
-// Typically for use in conjunction with Parser.Positionals
+// Typically for use in conjunction with Parser.Args()
 // `vars` are pointers to supported types.
 // Supported types: *string, *int, *float32
 func Unpack(tokens []string, vars ...interface{}) ([]string, error) {

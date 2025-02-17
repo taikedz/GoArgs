@@ -18,13 +18,30 @@ type VarDef interface {
 type Parser struct {
     definitions []VarDef
     // Non-flag tokens in the arguments
-    Positionals []string
+    positionals []string
     // All tokens found after the first instance of `--`
     PassdownArgs []string
 }
 
+// Args returns the positional tokens from the parsed arguments
+// Args does not return pass-down arguments
+func (p *Parser) Args() []string {
+    return p.positionals[:]
+}
+
+// Arg returns the i'th positional argument, after flags have been processed.
+// Arg does not process the pass-down arguments.
+// Arg returns an error if the index is out of bounds
+func (p *Parser) Arg(i int) (string, error) {
+    if i < len(p.positionals) {
+        return p.positionals[i], nil
+    } else {
+        return "", fmt.Errorf("Could not get item %d from a %d-length list", i, len(p.positionals))
+    }
+}
+
 func (p *Parser) ClearParsedData() {
-    p.Positionals = []string{}
+    p.positionals = []string{}
     p.PassdownArgs = []string{}
 }
 
@@ -91,7 +108,7 @@ func (p *Parser) Parse(args []string, ignore_unknown bool) error {
             }
 
         } else {
-            p.Positionals = append(p.Positionals, token)
+            p.positionals = append(p.positionals, token)
         }
     }
 

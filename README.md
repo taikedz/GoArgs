@@ -61,7 +61,7 @@ func main() {
         }
         // Unpack the positionals now that eventual flags have been removed
         // Expect the exact number of tokens to number of variables
-        if _, _, err := goargs.UnpackExactly(send_p.Positionals, &file, &server); err != nil {
+        if _, _, err := goargs.UnpackExactly(send_p.Args(), &file, &server); err != nil {
             fmt.Printf("%v\n", err)
             os.Exit(2)
         }
@@ -81,7 +81,7 @@ func main() {
             fmt.Printf("%v\n", err)
             os.Exit(1)
         }
-        if _,_, count_err := goargs.UnpackExactly(recv_p.Positionals, &server, &file); count_err != nil {
+        if _,_, count_err := goargs.UnpackExactly(recv_p.Args(), &server, &file); count_err != nil {
             fmt.Printf("%v\n", error)
             os.Exit(2)
         }

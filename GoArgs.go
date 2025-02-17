@@ -34,7 +34,7 @@ func main() {
 
     var person2 string
     var age2 int
-    remains, err := goargs.Unpack(par.Positionals, &person2, &age2)
+    remains, err := goargs.Unpack(par.positionals, &person2, &age2)
     if err != nil {
         fmt.Printf("!! %v\n", err)
         //return
