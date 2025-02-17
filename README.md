@@ -29,6 +29,10 @@ Yet to implement:
 * Optional short flags (rune `-` to mean "no short flag")
 * Short flags can be combined with single-hyphen notation (e.g. `-eux` for `-e -u -x`)
 
+## Example
+
+A basic example of usage. For further examples, see [goargs_test.go](./goargs_test.go) unit tests file
+
 ```go
 // Flags can appear before, after, or in between positionals
 
@@ -73,9 +77,9 @@ func main() {
         var recv_p goargs.Parser
         var file string
         var server string
-        var decrypt bool
 
-        recv_p.Bool(&decrypt, "decrypt", false)
+        // Declare an argument and variable to access result from
+        decrypt := recv_p.BoolVar("decrypt", false)
 
         // Detect flags, isolate positionals and extras
         if err := recv_p.Parse(moreargs, false); err != nil {
@@ -89,7 +93,7 @@ func main() {
 
         // The extra args after "--" are passed along directly, raw
         ServerCommand(recv_p.PassdownArgs)
-        DoSave(file, server) // ...
+        DoSave(file, server, *decrypt) // ...
     } else {
         fmt.Printf("Unknown action: %s", action)
         os.Exit(10)

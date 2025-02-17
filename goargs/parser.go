@@ -40,7 +40,7 @@ func (p *Parser) Arg(i int) (string, error) {
     }
 }
 
-func (p *Parser) clearParsedData() {
+func (p *Parser) ClearParsedData() {
     p.positionals = []string{}
     p.PassdownArgs = []string{}
 }
