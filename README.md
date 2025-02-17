@@ -6,8 +6,8 @@ The codebase remains small, ensuring it is easy to audit.
 
 Compatibility:
 
-* Pass pointer into argument delcaration (`flag.<Type>()` equivalents)
-* Create pointer from argument declaration (`flag.<Type>Var()` equivalents)
+* Create pointer from argument declaration (`flag.<Type>()` equivalents)
+* Pass pointer into argument delcaration (`flag.<Type>Var()` equivalents)
 
 Improved features:
 
@@ -79,7 +79,7 @@ func main() {
         var server string
 
         // Declare an argument and variable to access result from
-        decrypt := recv_p.BoolVar("decrypt", false)
+        decrypt := recv_p.Bool("decrypt", false)
 
         // Detect flags, isolate positionals and extras
         if err := recv_p.Parse(moreargs, false); err != nil {

@@ -29,10 +29,10 @@ func CheckEqualArr[V string|int|float32|bool](t *testing.T, exp_value []V, got_v
 func Test_ParseArgs_GetVar(t *testing.T) {
 	var parser goargs.Parser
 
-	name := parser.StringVar("name", "nobody")
-	age := parser.IntVar("age", -1)
-	height := parser.FloatVar("height", 0.0)
-	admit := parser.BoolVar("admit", false)
+	name := parser.String("name", "nobody")
+	age := parser.Int("age", -1)
+	height := parser.Float("height", 0.0)
+	admit := parser.Bool("admit", false)
 
 	args := []string{"one", "--name", "Alex", "two", "--age", "20", "--height", "1.8", "--admit", "--unknown", "--", "alpha", "beta"}
 	if err := parser.Parse(args, true); err != nil {
@@ -54,10 +54,10 @@ func Test_ParseArgs_Good(t *testing.T) {
 
 	var parser goargs.Parser
 
-	parser.String(&name, "name", "nobody")
-	parser.Int(&age, "age", -1)
-	parser.Float(&height, "height", 0.0)
-	parser.Bool(&admit, "admit", false)
+	parser.StringVar(&name, "name", "nobody")
+	parser.IntVar(&age, "age", -1)
+	parser.FloatVar(&height, "height", 0.0)
+	parser.BoolVar(&admit, "admit", false)
 
 	args := []string{"one", "--name", "Alex", "two", "--age", "20", "--height", "1.8", "--admit", "--unknown", "--", "alpha", "beta"}
 	if err := parser.Parse(args, true); err != nil {
@@ -78,8 +78,8 @@ func Test_ParseArgs_Fail(t *testing.T) {
 	var parser goargs.Parser
 	var value string
 	var number int
-	parser.String(&value, "val", "nothing")
-	parser.Int(&number, "num", -1)
+	parser.StringVar(&value, "val", "nothing")
+	parser.IntVar(&number, "num", -1)
 
 	if err := parser.Parse([]string{"front", "--val"}, false); err == nil {
 		t.Errorf("Should have failed for --val ! Got instead: %s", value)
