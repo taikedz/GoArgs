@@ -6,6 +6,7 @@ import (
 )
 
 
+// FIXME - VarDef is not seen outside the package, make methods private
 type VarDef interface {
     GetName() string
     Assign(string) error
@@ -46,11 +47,14 @@ func (p *Parser) Parse(args []string) error {
 
         if def != nil {
             i++
-            // TODO - this won't apply to bool flag - check type
-            // https://stackoverflow.com/a/7006853/2703818
-            if i >= len(args) { return fmt.Errorf("Expected value after %s", token) }
+            switch t := def.(type) {
+                case BoolDef:
+                    def.Assign(nil) // actually switches a boolean
+                default:
+                    if i >= len(args) { return fmt.Errorf("Expected value after %s", token) }
+                    def.Assign(args[i])
+            }
 
-            def.Assign(args[i])
         } else {
             p.positionals = append(p.positionals, token)
         }

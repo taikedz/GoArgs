@@ -29,19 +29,14 @@ func (self IntDef) Assign(value string) error {
 }
 
 
-/*
 type BoolDef {
     name string
     value *bool
 }
 func (self BoolDef) GetName() string { return self.name }
 func (self BoolDef) Assign(value string) error {
-    // FIXME - actually should assign `*self.value = !self.defval`
-    if value == "true" {
-        *self.value = true
-    } else {
-        *self.value = false
-    }
+    _ = value
+    *self.value = !self.defval
     return nil
-} // */
+}
 
