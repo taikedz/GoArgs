@@ -1,6 +1,8 @@
 # GoArgs - a better Go Arguments Parser
 
 Go's default `flag` library is rudimentary; GoArgs aims to provide a simple yet more featureful module for parsing arguments.
+The usage style matches the standard `flag` library for compatibility.
+The codebase remains small, ensuring it remains easy to audit.
 
 Notably:
 
@@ -19,33 +21,43 @@ Yet to implement:
 * Optional short flags (rune `-` to mean "no short flag")
 * Short flags can be combined with single-dash notation
 
-This basic feature set allows flexible argument parsing in a simple package. The codebase remains small, ensuring it remains easy to audit.
-
 ```go
 // Flags can appear before, after, or in between positionals
 
-// go run tool.go send ./thing --encrypt remote.lan
-// go run tool.go recv remote.lan ./stuff -- nc 12.34.56.78 3000 "<" file.txt
+// Compare example commands:
+//   go run tool.go send ./thing remote.lan
+//   go run tool.go recv remote.lan --decrypt ./stuff -- nc 12.34.56.78 3000 "<" file.txt
+package main
+import (
+    "fmt"
+    "os"
+    "net.taikedz.goargs/goargs"
+)
 
 func main() {
     var command goargs.Parser
     var action string
 
-    // Use `Unpack()` for processing positional arguments
+    // Use `Unpack()` for processing leftmost positional arguments
+    //   and retain the remainder in `moreargs`
     moreargs := goargs.Unpack(os.Args[1:], &action)
     
     if action == "send" {
         var send_p goargs.Parser
         var file string
         var server string
-        var encrypt bool
 
-        send_p.BoolArg(&encrypt, "encrypt", false)
+        // Use the parser to detect any/unexpected flags
         if err := send_p.Parse(moreargs, false); err != nil {
             fmt.Printf("%v\n", err)
             os.Exit(1)
         }
-        goargs.Unpack(send_p.Positionals, &file, &server)
+        // Unpack the positionals now that eventual flags have been removed
+        // Expect the exact number of tokens to number of variables
+        if _, _, err := goargs.UnpackExactly(send_p.Positionals, &file, &server); err != nil {
+            fmt.Printf("%v\n", err)
+            os.Exit(2)
+        }
 
         DoSend(file, server, encrypt) // ...
 
@@ -53,15 +65,22 @@ func main() {
         var recv_p goargs.Parser
         var file string
         var server string
-        var encrypt bool
+        var decrypt bool
 
+        recv_p.BoolArg(&decrypt, "decrypt", false)
+
+        // Detect flags, isolate positionals and extras
         if err := recv_p.Parse(moreargs, false); err != nil {
             fmt.Printf("%v\n", err)
             os.Exit(1)
         }
-        goargs.Unpack(recv_p.Positionals, &server, &file)
+        if _,_, count_err := goargs.UnpackExactly(recv_p.Positionals, &server, &file); count_err != nil {
+            fmt.Printf("%v\n", error)
+            os.Exit(2)
+        }
 
-        ServerCommand(recv_p.PassdownArgs) // all tokens after the first "--"
+        // The extra args after "--" are passed along directly, raw
+        ServerCommand(recv_p.PassdownArgs)
         DoSave(file, server) // ...
     }
 }

@@ -23,6 +23,11 @@ type Parser struct {
     PassdownArgs []string
 }
 
+func (p *Parser) ClearParsedData() {
+    p.Positionals = []string{}
+    p.PassdownArgs = []string{}
+}
+
 // Look for a VarDef carying the given longname as its name, returning a pointer to that VarDef
 // If none is found returns nil
 func (p *Parser) fromName(longname string) *VarDef {
@@ -80,7 +85,9 @@ func (p *Parser) Parse(args []string, ignore_unknown bool) error {
                         if i >= len(args) { return fmt.Errorf("Expected value after %s", token) }
                         nextVal = &args[i]
                     }
-                    def.assign(*nextVal)
+                    if err := def.assign(*nextVal); err != nil {
+                        return err
+                    }
             }
 
         } else {
