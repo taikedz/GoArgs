@@ -3,6 +3,7 @@ package goargs
 import (
     "fmt"
     "os"
+    "strings"
 )
 
 type VarDef interface {
@@ -43,6 +44,7 @@ func (p *Parser) Parse(args []string, ignore_unknown bool) error {
     for i := 0; i<len(args); i++ {
         token := args[i]
         var def_p *VarDef = nil
+        var nextVal *string = nil
 
         if token[:2] == "--" {
             longname := token[2:]
@@ -51,6 +53,11 @@ func (p *Parser) Parse(args []string, ignore_unknown bool) error {
                 // Retain them as such, and stop parsing
                 p.PassdownArgs = args[i+1:]
                 return nil
+            }
+            if strings.Contains(longname, "=") {
+                seq := strings.SplitN(longname, "=", 2)
+                longname = seq[0]
+                nextVal = &seq[1]
             }
             def_p = p.fromName(longname)
 
@@ -68,9 +75,12 @@ func (p *Parser) Parse(args []string, ignore_unknown bool) error {
                 case BoolDef:
                     def.(BoolDef).activate() // switches a boolean to opposite of its default value
                 default:
-                    i++
-                    if i >= len(args) { return fmt.Errorf("Expected value after %s", token) }
-                    def.assign(args[i])
+                    if nextVal == nil {
+                        i++
+                        if i >= len(args) { return fmt.Errorf("Expected value after %s", token) }
+                        nextVal = &args[i]
+                    }
+                    def.assign(*nextVal)
             }
 
         } else {

@@ -7,7 +7,7 @@ import (
 
 func main() {
     // Try with:
-    // go run GoArgs.go Bob --name Jay --age 12 --height 1.7 --admit 15 --debug -- There is more --oops
+    // go run GoArgs.go Bob --name=Jay --age 12 --height=1.7 --admit 15 and the rest --debug -- There is more --oops
     var par goargs.Parser
 
     var person string
@@ -39,6 +39,6 @@ func main() {
         fmt.Printf("!! %v\n", err)
         //return
     }
-    fmt.Printf("%s -> %d\n || %v", person2, age2, remains)
+    fmt.Printf("Unpacked: %s -> %d\nRemains: %v\n", person2, age2, remains)
 }
 
