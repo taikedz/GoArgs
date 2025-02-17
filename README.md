@@ -1,10 +1,14 @@
-# GoArgs - a better Go Arguments Parser
+# GoArgs - a simple and versatile Go arguments parser
 
-Go's default `flag` library is rudimentary; GoArgs aims to provide a simple yet more featureful module for parsing arguments.
-The usage style matches the standard `flag` library for compatibility, though it is not aiming to be a drop-in replacement.
-The codebase remains small, ensuring it is easy to audit.
+Go's default `flag` library feels rudimentary; GoArgs aims to provide a simple yet more featureful module for parsing arguments.
+The usage style matches the standard `flag` library for limited compatibility.
 
-Compatibility:
+The codebase aims to remain small, ensuring it is easy to audit as an external dependency. It is not as fully featured as other implementations out there. See [alternatives](#alternatives) for more options.
+
+Note that GoArgs does not intend to be a drop-in replacement for `flags` given its intent to improve on some behaviours. Simple usage of `flags` may be able to drop-in `goargs`, but
+this is not a design goal.
+
+Compatibility wtih `flag`:
 
 * Create pointer from argument declaration (`flag.<Type>()` equivalents)
 * Pass pointer into argument delcaration (`flag.<Type>Var()` equivalents)
@@ -20,14 +24,17 @@ Improved features:
 
 Yet to implement:
 
-* Flag event function (`flag.Func` equivalent)
-* Bool flag counter (`flag.BoolFunc` equivalent)
-* Additional types as found in `flag` standard lib
+* Compatibility
+    * Flag event function (`flag.Func` equivalent)
+    * Bool flag counter (`flag.BoolFunc` equivalent)
+    * Additional types (equivalents as found in `flag` standard lib)
 * StringChoices argument type
-* Usage strings
-* Help display
-* Optional short flags (rune `-` to mean "no short flag")
-* Short flags can be combined with single-hyphen notation (e.g. `-eux` for `-e -u -x`)
+* Help system
+    * Usage strings
+    * Help display (`PrintDefaults` and `SPrintDefaults`, auto-detection of `--help` and `-h`)
+* Short flags
+    * Specify short notation for boolean flags (`Parser.ShortFlag("v", "verbose")`, compatible with `flag.BoolFunc`)
+    * Short flags can be combined with single-hyphen notation (e.g. `-eux` for `-e -u -x`, or `-vv` for `-v -v` or `--verbose --verbose`)
 
 ## Example
 
@@ -101,3 +108,11 @@ func main() {
 }
 ```
 
+## Alternatives
+
+Why use `taikedz/GoArgs` ? If your needs are minimal and you literally need to copy the files in, or to fully understand it (e.g. for auditability), then maybe you have a case to use this lib. Elsewise, please treat it as a learning tool for its easy-to-read implementation. This package did begin as a learning project, started whilst on an airplane.
+
+More-established packages exist that also offer partial drop-in capability, as well as support for short options, and `--` terminated arguments sequences:
+
+* <https://pkg.go.dev/github.com/spf13/pflag>
+* <https://pkg.go.dev/github.com/jessevdk/go-flags>
