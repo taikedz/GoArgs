@@ -51,16 +51,6 @@ func (p *Parser) ClearParsedData() {
     p.PassdownArgs = []string{}
 }
 
-// Look for a VarDef carying the given longname as its name, returning a pointer to that VarDef
-// If none is found returns nil
-func (p *Parser) fromName(longname string) *VarDef {
-    if v, e := p.definitions[longname]; e {
-        return &v
-    } else {
-        return nil
-    }
-}
-
 // Parse the program's CLI arguments. Must be called before accessing flags' variables.
 // If ignore_unknown is true, returns an error for unrecognised flags
 // If ignore_unknown is false, retains unrecognised flags in the positional arguments set
@@ -72,7 +62,7 @@ func (p *Parser) ParseCliArgs(ignore_unknown bool) error {
 func (p *Parser) Parse(args []string, ignore_unknown bool) error {
     for i := 0; i<len(args); i++ {
         token := args[i]
-        var def_p *VarDef = nil
+        var def_ifc VarDef = nil // Interface types are a bit pointery (can be nil), but cannot ever be indirected with `*`
         var nextVal *string = nil
 
         if token[:2] == "--" {
@@ -88,9 +78,9 @@ func (p *Parser) Parse(args []string, ignore_unknown bool) error {
                 longname = seq[0]
                 nextVal = &seq[1]
             }
-            def_p = p.fromName(longname)
+            def_ifc = p.definitions[longname]
 
-            if def_p == nil && !ignore_unknown {
+            if def_ifc == nil && !ignore_unknown {
                 return fmt.Errorf("Unknown flag %s", token)
             }
 
@@ -98,18 +88,17 @@ func (p *Parser) Parse(args []string, ignore_unknown bool) error {
 
         // TODO - support short names?
 
-        if def_p != nil {
-            def := *def_p
-            switch def.(type) {
+        if def_ifc != nil {
+            switch def_ifc.(type) {
                 case BoolDef:
-                    def.(BoolDef).activate() // switches a boolean to opposite of its default value
+                    def_ifc.(BoolDef).activate() // switches a boolean to opposite of its default value
                 default:
                     if nextVal == nil {
                         i++
                         if i >= len(args) { return fmt.Errorf("Expected value after %s", token) }
                         nextVal = &args[i]
                     }
-                    if err := def.assign(*nextVal); err != nil {
+                    if err := def_ifc.assign(*nextVal); err != nil {
                         return err
                     }
             }
