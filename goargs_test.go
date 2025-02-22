@@ -110,6 +110,13 @@ func Test_helpstr(t *testing.T) {
 	}
 }
 
+func Test_findhelp(t *testing.T) {
+	CheckEqual(t, 1, goargs.FindHelpFlag([]string{"a", "-h", "--help"}))
+	CheckEqual(t, 0, goargs.FindHelpFlag([]string{"-h", "next", "--help"}))
+	CheckEqual(t, 2, goargs.FindHelpFlag([]string{"-he", "next", "--help"}))
+	CheckEqual(t, -1, goargs.FindHelpFlag([]string{"a", "--", "-h", "--help"}))
+}
+
 func Test_Unpack(t *testing.T) {
 	var name string
 	var count int

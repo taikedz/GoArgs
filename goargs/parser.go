@@ -59,9 +59,17 @@ func (p *Parser) ClearParsedData() {
     p.PassdownArgs = []string{}
 }
 
-// Parse the program's CLI arguments. Must be called before accessing flags' variables.
-// See Parse().
+/* Parse the program's CLI arguments. Must be called before accessing flags' variables.
+
+If "-" or "--help" is found before the first "--", then help is printed.
+
+See Parse().
+*/
 func (p *Parser) ParseCliArgs(ignore_unknown bool) error {
+    if i := FindHelpFlag(os.Args[1:]); i >= 0 {
+        p.PrintHelp()
+        os.Exit(0)
+    }
     return p.Parse(os.Args[1:], ignore_unknown)
 }
 

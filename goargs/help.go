@@ -42,3 +42,14 @@ func (p *Parser) SPrintHelp() string {
 func (p *Parser) PrintHelp() {
 	print(p.SPrintHelp())
 }
+
+func FindHelpFlag(tokens []string) int {
+	for i,token := range tokens {
+		if token == "--help" || token == "-h" {
+			return i
+		} else if token == "--" {
+			break
+		}
+	}
+	return -1
+}
