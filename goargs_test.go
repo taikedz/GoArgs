@@ -27,12 +27,12 @@ func CheckEqualArr[V string|int|float32|bool](t *testing.T, exp_value []V, got_v
 // ===
 
 func Test_ParseArgs_GetVar(t *testing.T) {
-	parser := goargs.NewParser()
+	parser := goargs.NewParser("")
 
-	name := parser.String("name", "nobody")
-	age := parser.Int("age", -1)
-	height := parser.Float("height", 0.0)
-	admit := parser.Bool("admit", false)
+	name := parser.String("name", "nobody", "Their name")
+	age := parser.Int("age", -1, "Their age")
+	height := parser.Float("height", 0.0, "Their height")
+	admit := parser.Bool("admit", false, "Whether to admit")
 
 	args := []string{"one", "--name", "Alex", "two", "--age", "20", "--height", "1.8", "--admit", "--unknown", "--", "alpha", "beta"}
 	if err := parser.Parse(args, true); err != nil {
@@ -52,12 +52,12 @@ func Test_ParseArgs_Good(t *testing.T) {
 	var height float32
 	var admit bool
 
-	parser := goargs.NewParser()
+	parser := goargs.NewParser("")
 
-	parser.StringVar(&name, "name", "nobody")
-	parser.IntVar(&age, "age", -1)
-	parser.FloatVar(&height, "height", 0.0)
-	parser.BoolVar(&admit, "admit", false)
+	parser.StringVar(&name, "name", "nobody", "Their name")
+	parser.IntVar(&age, "age", -1, "Their age")
+	parser.FloatVar(&height, "height", 0.0, "Their height")
+	parser.BoolVar(&admit, "admit", false, "Whether to admit")
 
 	args := []string{"one", "--name", "Alex", "two", "--age", "20", "--height", "1.8", "--admit", "--unknown", "--", "alpha", "beta"}
 	if err := parser.Parse(args, true); err != nil {
@@ -75,11 +75,11 @@ func Test_ParseArgs_Good(t *testing.T) {
 }
 
 func Test_ParseArgs_Fail(t *testing.T) {
-	parser := goargs.NewParser()
+	parser := goargs.NewParser("")
 	var value string
 	var number int
-	parser.StringVar(&value, "val", "nothing")
-	parser.IntVar(&number, "num", -1)
+	parser.StringVar(&value, "val", "nothing", "Some value")
+	parser.IntVar(&number, "num", -1, "Some numeral")
 
 	if err := parser.Parse([]string{"front", "--val"}, false); err == nil {
 		t.Errorf("Should have failed for --val ! Got instead: %s", value)
@@ -95,6 +95,19 @@ func Test_ParseArgs_Fail(t *testing.T) {
 		t.Errorf("Should have failed for --unknown ! Parser content is: %v", parser)
 	}
 	parser.ClearParsedData()
+}
+
+func Test_helpstr(t *testing.T) {
+	parser := goargs.NewParser("Do lots")
+
+	parser.String("gopher", "gaffer", "Wee rat")
+	parser.Bool("whack", false, "Slam it?")
+
+	helptext := parser.SPrintHelp()
+	expect := "Do lots\n\n  --gopher VALUE\n    default: gaffer\n    Wee rat\n  --whack\n    default: false\n    Slam it?"
+	if helptext != expect {
+		t.Errorf("Mismatched help strings. Got:\n<<%s>>\nInstead of:\n<<%s>>", helptext, expect)
+	}
 }
 
 func Test_Unpack(t *testing.T) {

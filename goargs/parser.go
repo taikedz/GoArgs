@@ -18,16 +18,23 @@ type VarDef interface {
 //  and be made to parse different sequences of argument tokens.
 type Parser struct {
     definitions map[string]VarDef
+    longnames []string
+    helptext string
     // Non-flag tokens in the arguments
     positionals []string
     // All tokens found after the first instance of `--`
     PassdownArgs []string
 }
 
-func NewParser() Parser {
+func NewParser(helptext string) Parser {
     var p Parser
     p.definitions = make(map[string]VarDef)
+    p.helptext = helptext
     return p
+}
+
+func (p *Parser) enqueueName(name string) {
+    p.longnames = append(p.longnames, name)
 }
 
 // Args returns the positional tokens from the parsed arguments
