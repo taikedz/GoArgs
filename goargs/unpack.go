@@ -7,7 +7,9 @@ import (
 
 // Unpack arguments into a series of variables, and return any unassigned values.
 // Typically for use in conjunction with Parser.Args()
+//
 // `vars` are pointers to supported types.
+//
 // Supported types: *string, *int, *float32
 func Unpack(tokens []string, vars ...interface{}) ([]string, error) {
     max := len(tokens)
@@ -47,7 +49,7 @@ func Unpack(tokens []string, vars ...interface{}) ([]string, error) {
     return tokens[max:], nil
 }
 
-// Unpack tokens, expecting the numebr of variabls and number of tokens to match.
+// Unpack tokens, expecting the number of variables and number of tokens to match.
 // Returns
 //    remainder (if any, or nil)
 //    parse error (if any, or nil)

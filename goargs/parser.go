@@ -60,13 +60,15 @@ func (p *Parser) ClearParsedData() {
 }
 
 // Parse the program's CLI arguments. Must be called before accessing flags' variables.
-// If ignore_unknown is true, returns an error for unrecognised flags
-// If ignore_unknown is false, retains unrecognised flags in the positional arguments set
+// See Parse().
 func (p *Parser) ParseCliArgs(ignore_unknown bool) error {
     return p.Parse(os.Args[1:], ignore_unknown)
 }
 
-// Parse custom token sequence. See ParseCliArgs.
+// Parse custom token sequence.
+//
+// * If ignore_unknown is false, returns an error for unrecognised flags
+// * If ignore_unknown is true, retains unrecognised flags in the positional arguments set
 func (p *Parser) Parse(args []string, ignore_unknown bool) error {
     for i := 0; i<len(args); i++ {
         token := args[i]
