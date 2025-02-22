@@ -16,11 +16,17 @@ type VarDef interface {
 // Each Parser can receive a distinct set of value type pointers
 //  and be made to parse different sequences of argument tokens.
 type Parser struct {
-    definitions []VarDef
+    definitions map[string]VarDef
     // Non-flag tokens in the arguments
     positionals []string
     // All tokens found after the first instance of `--`
     PassdownArgs []string
+}
+
+func NewParser() Parser {
+    var p Parser
+    p.definitions = make(map[string]VarDef)
+    return p
 }
 
 // Args returns the positional tokens from the parsed arguments
@@ -48,10 +54,11 @@ func (p *Parser) ClearParsedData() {
 // Look for a VarDef carying the given longname as its name, returning a pointer to that VarDef
 // If none is found returns nil
 func (p *Parser) fromName(longname string) *VarDef {
-    for _, vdef := range p.definitions {
-        if vdef.getName() == longname { return &vdef }
+    if v, e := p.definitions[longname]; e {
+        return &v
+    } else {
+        return nil
     }
-    return nil
 }
 
 // Parse the program's CLI arguments. Must be called before accessing flags' variables.

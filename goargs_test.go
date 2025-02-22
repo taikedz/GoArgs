@@ -27,7 +27,7 @@ func CheckEqualArr[V string|int|float32|bool](t *testing.T, exp_value []V, got_v
 // ===
 
 func Test_ParseArgs_GetVar(t *testing.T) {
-	var parser goargs.Parser
+	parser := goargs.NewParser()
 
 	name := parser.String("name", "nobody")
 	age := parser.Int("age", -1)
@@ -52,7 +52,7 @@ func Test_ParseArgs_Good(t *testing.T) {
 	var height float32
 	var admit bool
 
-	var parser goargs.Parser
+	parser := goargs.NewParser()
 
 	parser.StringVar(&name, "name", "nobody")
 	parser.IntVar(&age, "age", -1)
@@ -75,7 +75,7 @@ func Test_ParseArgs_Good(t *testing.T) {
 }
 
 func Test_ParseArgs_Fail(t *testing.T) {
-	var parser goargs.Parser
+	parser := goargs.NewParser()
 	var value string
 	var number int
 	parser.StringVar(&value, "val", "nothing")
