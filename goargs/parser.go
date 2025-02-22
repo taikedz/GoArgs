@@ -9,6 +9,7 @@ import (
 type VarDef interface {
     getName() string
     assign(string) error
+    getHelpString() string
 }
 
 
