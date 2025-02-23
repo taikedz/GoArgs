@@ -67,6 +67,70 @@ func (p *Parser) Int(name string, defval int, helpstr string) *int {
 
 // ======
 
+type Int64Def struct {
+    name string
+    defval int64
+    value *int64
+    helpstr string
+}
+func (self Int64Def) getHelpString() string { return self.helpstr }
+func (self Int64Def) getName() string { return self.name }
+func (self Int64Def) assign(value string) error {
+    if val, err := strconv.Atoi(value); err != nil {
+        return fmt.Errorf("Could not parse %s\n", value)
+    } else {
+        *self.value = int64(val)
+    }
+    return nil
+}
+
+func (p *Parser) Int64Var(value *int64, name string, defval int64, helpstr string) {
+    vdef := Int64Def{name, defval, value, helpstr}
+    *vdef.value = defval
+    p.definitions[name] = vdef
+    p.enqueueName(name)
+}
+func (p *Parser) Int64(name string, defval int64, helpstr string) *int64 {
+    var val int64
+    p.Int64Var(&val, name, defval, helpstr)
+    return &val
+}
+
+
+// ======
+
+type UintDef struct {
+    name string
+    defval uint
+    value *uint
+    helpstr string
+}
+func (self UintDef) getHelpString() string { return self.helpstr }
+func (self UintDef) getName() string { return self.name }
+func (self UintDef) assign(value string) error {
+    if val, err := strconv.Atoi(value); err != nil {
+        return fmt.Errorf("Could not parse %s\n", value)
+    } else {
+        *self.value = uint(val)
+    }
+    return nil
+}
+
+func (p *Parser) UintVar(value *uint, name string, defval uint, helpstr string) {
+    vdef := UintDef{name, defval, value, helpstr}
+    *vdef.value = defval
+    p.definitions[name] = vdef
+    p.enqueueName(name)
+}
+func (p *Parser) Uint(name string, defval uint, helpstr string) *uint {
+    var val uint
+    p.UintVar(&val, name, defval, helpstr)
+    return &val
+}
+
+
+// ======
+
 type FloatDef struct {
     name string
     defval float32
@@ -93,6 +157,38 @@ func (p *Parser) FloatVar(value *float32, name string, defval float32, helpstr s
 func (p *Parser) Float(name string, defval float32, helpstr string) *float32 {
     var val float32
     p.FloatVar(&val, name, defval, helpstr)
+    return &val
+}
+
+
+// ======
+
+type Float64Def struct {
+    name string
+    defval float64
+    value *float64
+    helpstr string
+}
+func (self Float64Def) getHelpString() string { return self.helpstr }
+func (self Float64Def) getName() string { return self.name }
+func (self Float64Def) assign(value string) error {
+    if val, err := strconv.ParseFloat(value, 64); err != nil {
+        return fmt.Errorf("Could not parse %s\n", value)
+    } else {
+        *self.value = float64(val)
+    }
+    return nil
+}
+
+func (p *Parser) Float64Var(value *float64, name string, defval float64, helpstr string) {
+    vdef := Float64Def{name, defval, value, helpstr}
+    *vdef.value = defval
+    p.definitions[name] = vdef
+    p.enqueueName(name)
+}
+func (p *Parser) Float64(name string, defval float64, helpstr string) *float64 {
+    var val float64
+    p.Float64Var(&val, name, defval, helpstr)
     return &val
 }
 

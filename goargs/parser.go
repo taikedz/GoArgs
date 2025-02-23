@@ -4,6 +4,8 @@ import (
     "fmt"
     "os"
     "strings"
+    "slices"
+    "regexp"
 )
 
 type VarDef interface {
@@ -34,6 +36,12 @@ func NewParser(helptext string) Parser {
 }
 
 func (p *Parser) enqueueName(name string) {
+    if slices.Contains(p.longnames, name) {
+        panic(fmt.Sprintf("Flag '--%s' already defined.", name))
+    }
+    if matched, _ := regexp.MatchString("^[a-zA-Z][a-zA-Z0-9_-]+$", name); !matched {
+        panic(fmt.Sprintf("Invalid flag name '%s'. Must be minimum two characters long and start with letter"))
+    }
     p.longnames = append(p.longnames, name)
 }
 
@@ -59,24 +67,15 @@ func (p *Parser) ClearParsedData() {
     p.PassdownArgs = []string{}
 }
 
-/* Parse the program's CLI arguments. Must be called before accessing flags' variables.
+/*
+Parse custom token sequence.
 
-If "-" or "--help" is found before the first "--", then help is printed.
+* If ignore_unknown is false, returns an error for unrecognised flags
+* If ignore_unknown is true, retains unrecognised flags in the positional arguments set
 
-See Parse().
+Panics if a flag is defined twice on the same name, or if the flag has a bad name.
+Acceptable flag names must be at least two characters long, and start with an ASCII-7 alphabetical character.
 */
-func (p *Parser) ParseCliArgs(ignore_unknown bool) error {
-    if i := FindHelpFlag(os.Args[1:]); i >= 0 {
-        p.PrintHelp()
-        os.Exit(0)
-    }
-    return p.Parse(os.Args[1:], ignore_unknown)
-}
-
-// Parse custom token sequence.
-//
-// * If ignore_unknown is false, returns an error for unrecognised flags
-// * If ignore_unknown is true, retains unrecognised flags in the positional arguments set
 func (p *Parser) Parse(args []string, ignore_unknown bool) error {
     for i := 0; i<len(args); i++ {
         token := args[i]
@@ -130,5 +129,19 @@ func (p *Parser) Parse(args []string, ignore_unknown bool) error {
     }
 
     return nil
+}
+
+/* Parse the program's CLI arguments. Must be called before accessing flags' variables.
+
+If "-" or "--help" is found before the first "--", then help is printed.
+
+See Parse() for further behaviours.
+*/
+func (p *Parser) ParseCliArgs(ignore_unknown bool) error {
+    if i := FindHelpFlag(os.Args[1:]); i >= 0 {
+        p.PrintHelp()
+        os.Exit(0)
+    }
+    return p.Parse(os.Args[1:], ignore_unknown)
 }
 
