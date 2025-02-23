@@ -11,14 +11,17 @@ func (p *Parser) SPrintHelp() string {
 	helplines := []string{p.helptext, ""}
 	for _,name := range p.longnames {
 		def := p.definitions[name]
-		switch def.(type) { // Flag format
-		case BoolDef:
+
+		// Flag format
+		switch def.(type) {
+		case BoolDef, CountDef:
 			helplines = append(helplines, fmt.Sprintf("  --%s", name)) // TODO - list short flag
 		default:
 			helplines = append(helplines, fmt.Sprintf("  --%s VALUE", name))
 		}
 
-		switch def.(type) { // Flag default value
+		// Flag default value
+		switch def.(type) {
 		case StringDef:
 			helplines = append(helplines, fmt.Sprintf("    default: %s", def.(StringDef).defval))
 		case IntDef: // Eventually "case IntDef, UintDef:"
@@ -29,6 +32,8 @@ func (p *Parser) SPrintHelp() string {
 			helplines = append(helplines, fmt.Sprintf("    default: %t", def.(BoolDef).defval))
 		case DurationDef: // DurationDef, UnmarshalerDef
 			helplines = append(helplines, fmt.Sprintf("    default: %v", def.(DurationDef).defval))
+		case CountDef:
+			helplines = append(helplines, fmt.Sprintf("(each appearance of '--%s' is counted)", name))
 		}
 
 		// Flag help string

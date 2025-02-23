@@ -59,7 +59,7 @@ func UnpackExactly(tokens []string, vars ...interface{}) ([]string, error, error
 	remains, err := Unpack(tokens, vars...)
 
 	if err != nil {
-		return remains, err, nil
+		return nil, err, nil
 	}
 	if len(tokens) > len(vars) {
 		return remains, nil, fmt.Errorf("Excess tokens")

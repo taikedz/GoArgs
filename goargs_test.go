@@ -33,8 +33,9 @@ func Test_ParseArgs_GetVar(t *testing.T) {
 	age := parser.Int("age", -1, "Their age")
 	height := parser.Float("height", 0.0, "Their height")
 	admit := parser.Bool("admit", false, "Whether to admit")
+	verbose_lvl := parser.Count("verbose", "How verbose to be")
 
-	args := []string{"one", "--name", "Alex", "two", "--age", "20", "--height", "1.8", "--admit", "--unknown", "--", "alpha", "beta"}
+	args := []string{"one", "--name", "Alex", "two", "--age", "20", "--height", "1.8", "--admit", "--verbose", "--verbose", "--unknown", "--", "alpha", "beta"}
 	if err := parser.Parse(args, true); err != nil {
 		t.Errorf("Failed parse: %v", err)
 		return
@@ -44,6 +45,7 @@ func Test_ParseArgs_GetVar(t *testing.T) {
 	CheckEqual(t, *age, 20)
 	CheckEqual(t, *height, 1.8)
 	CheckEqual(t, *admit, true)
+	CheckEqual(t, *verbose_lvl, 2)
 }
 
 func Test_ParseArgs_Good(t *testing.T) {

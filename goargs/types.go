@@ -27,9 +27,9 @@ func (p *Parser) StringVar(value *string, name string, defval string, helpstr st
     p.enqueueName(name)
 }
 func (p *Parser) String(name string, defval string, helpstr string) *string {
-    var s string
-    p.StringVar(&s, name, defval, helpstr)
-    return &s
+    var val string
+    p.StringVar(&val, name, defval, helpstr)
+    return &val
 }
 
 
@@ -59,9 +59,9 @@ func (p *Parser) IntVar(value *int, name string, defval int, helpstr string) {
     p.enqueueName(name)
 }
 func (p *Parser) Int(name string, defval int, helpstr string) *int {
-    var s int
-    p.IntVar(&s, name, defval, helpstr)
-    return &s
+    var val int
+    p.IntVar(&val, name, defval, helpstr)
+    return &val
 }
 
 
@@ -91,9 +91,9 @@ func (p *Parser) FloatVar(value *float32, name string, defval float32, helpstr s
     p.enqueueName(name)
 }
 func (p *Parser) Float(name string, defval float32, helpstr string) *float32 {
-    var s float32
-    p.FloatVar(&s, name, defval, helpstr)
-    return &s
+    var val float32
+    p.FloatVar(&val, name, defval, helpstr)
+    return &val
 }
 
 
@@ -107,7 +107,7 @@ type BoolDef struct {
 }
 func (self BoolDef) getHelpString() string { return self.helpstr }
 func (self BoolDef) getName() string { return self.name }
-func (self BoolDef) assign(value string) error { return fmt.Errorf("Invalid operation") }
+func (self BoolDef) assign(value string) error { return fmt.Errorf("Internal error: Invalid action. Use activate()") }
 func (self BoolDef) activate() { *self.value = !self.defval }
 
 func (p *Parser) BoolVar(value *bool, name string, defval bool, helpstr string) {
@@ -117,9 +117,9 @@ func (p *Parser) BoolVar(value *bool, name string, defval bool, helpstr string) 
     p.enqueueName(name)
 }
 func (p *Parser) Bool(name string, defval bool, helpstr string) *bool {
-    var s bool
-    p.BoolVar(&s, name, defval, helpstr)
-    return &s
+    var val bool
+    p.BoolVar(&val, name, defval, helpstr)
+    return &val
 }
 
 // ======
@@ -148,8 +148,8 @@ func (p *Parser) DurationVar(value *time.Duration, name string, defval time.Dura
     p.enqueueName(name)
 }
 func (p *Parser) Duration(name string, defval time.Duration, helpstr string) *time.Duration {
-    var s time.Duration
-    p.DurationVar(&s, name, defval, helpstr)
-    return &s
+    var val time.Duration
+    p.DurationVar(&val, name, defval, helpstr)
+    return &val
 }
 

@@ -13,6 +13,11 @@ Compatibility wtih `flag`:
 * Create pointer from argument declaration (`flag.<Type>()` equivalents)
 * Pass pointer into argument delcaration (`flag.<Type>Var()` equivalents)
 
+Types:
+
+* Basic: String, Int, Float, Bool, time.Duration (for general usefulness)
+* Counter: incerments a counter every time the flag is seen (such as `-vvv` for incresed levels of verbosity)
+
 Improved features:
 
 * Flags can appear intermixed with positional arguments
@@ -28,7 +33,6 @@ Yet to implement:
 
 * Compatibility
     * Flag event function (`flag.Func` equivalent)
-    * Bool flag counter (`flag.BoolFunc` equivalent)
     * Additional types (equivalents as found in `flag` standard lib)
 * StringChoices argument type
 * Short flags

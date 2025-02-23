@@ -109,7 +109,10 @@ func (p *Parser) Parse(args []string, ignore_unknown bool) error {
         if def_ifc != nil {
             switch def_ifc.(type) {
                 case BoolDef:
-                    def_ifc.(BoolDef).activate() // switches a boolean to opposite of its default value
+                    // switches a boolean to opposite of its default value
+                    def_ifc.(BoolDef).activate()
+                case CountDef:
+                    def_ifc.(CountDef).increment()
                 default:
                     if nextVal == nil {
                         i++
