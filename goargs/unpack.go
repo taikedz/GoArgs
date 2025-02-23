@@ -54,6 +54,8 @@ func Unpack(tokens []string, vars ...interface{}) ([]string, error) {
 //    any error
 func UnpackExactly(tokens []string, vars ...interface{}) error {
     if len(tokens) != len(vars) {
+        // FIXME - how does dev user differentiate a parse error from a mismatch error?
+        //         dev will surely want to handle the two cases differently...
         return fmt.Errorf("Mismatch number of tokens (%d) to number of variables to populate (%d)", len(tokens), len(vars))
 	}
 
