@@ -134,15 +134,15 @@ func Test_Unpack(t *testing.T) {
 		t.Errorf("Should have parsed OK, got error: %v", err)
 	}
 
-	if remains, _, err := goargs.UnpackExactly(args[:3], &name, &count, &ratio); err != nil || remains != nil {
+	if err := goargs.UnpackExactly(args[:3], &name, &count, &ratio); err != nil {
 		t.Errorf("Should have succeeded!")
 	}
 
-	if remains, _, err := goargs.UnpackExactly(args, &name, &count, &ratio); err == nil || remains == nil {
+	if err := goargs.UnpackExactly(args, &name, &count, &ratio); err == nil {
 		t.Errorf("Should have failed due to excess tokens!")
 	}
 
-	if remains, _, err := goargs.UnpackExactly(args[:2], &name, &count, &ratio); err == nil || remains != nil {
+	if err := goargs.UnpackExactly(args[:2], &name, &count, &ratio); err == nil {
 		t.Errorf("Should have failed due to insufficient tokens!")
 	}
 }

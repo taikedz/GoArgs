@@ -51,22 +51,15 @@ func Unpack(tokens []string, vars ...interface{}) ([]string, error) {
 
 // Unpack tokens, expecting the number of variables and number of tokens to match.
 // Returns
-//    remainder (if any, or nil)
-//    parse error (if any, or nil)
-//    count error (if any, or nil)
-func UnpackExactly(tokens []string, vars ...interface{}) ([]string, error, error) {
-	var err error
-	remains, err := Unpack(tokens, vars...)
-
-	if err != nil {
-		return nil, err, nil
-	}
-	if len(tokens) > len(vars) {
-		return remains, nil, fmt.Errorf("Excess tokens")
-	}
-	if len(tokens) < len(vars) {
-		return nil, nil, fmt.Errorf("Last %d vars were uninitialized", len(vars)-len(tokens))
+//    any error
+func UnpackExactly(tokens []string, vars ...interface{}) error {
+    if len(tokens) != len(vars) {
+        return fmt.Errorf("Mismatch number of tokens (%d) to number of variables to populate (%d)", len(tokens), len(vars))
 	}
 
-	return nil, nil, nil
+	if _, err := Unpack(tokens, vars...); err != nil {
+		return err
+	}
+
+	return nil
 }
