@@ -67,6 +67,40 @@ func Test_ParseArgs_Specials(t *testing.T) {
 	}
 }
 
+func Test_ParseArgs_Shortflags(t *testing.T) {
+	parser := goargs.NewParser("")
+
+	verbose := parser.Count("verbose", "help")
+	parser.SetShortFlag('v', "verbose")
+	admit := parser.Bool("admit", false, "help")
+	parser.SetShortFlag('a', "admit")
+
+	name := parser.String("name", "who", "help")
+	parser.SetShortFlag('N', "name")
+
+	CheckEqual(t, *verbose, 0)
+	CheckEqual(t, *admit, false)
+	CheckEqual(t, *name, "who")
+
+	if err := parser.Parse([]string{"-vav", "-N", "Rae"}, false); err != nil {
+		t.Errorf("Failed shortflags parse: %v", err)
+	}
+	CheckEqual(t, *verbose, 2)
+	CheckEqual(t, *admit, true)
+	CheckEqual(t, *name, "Rae")
+
+	if err := parser.Parse([]string{"-vavN", "Roo"}, false); err == nil {
+		t.Errorf("Shortflags parse with combined vavN should have failed, value of name is '%s'", *name)
+	}
+	CheckEqual(t, *verbose, 4)
+	CheckEqual(t, *admit, true)
+	CheckEqual(t, *name, "Rae")
+
+	if err := parser.SetShortFlag('u', "unknown"); err == nil {
+		t.Errorf("Setting unknown short flag should have failed")
+	}
+}
+
 func Test_ParseArgs_Good(t *testing.T) {
 	var name string
 	var age int

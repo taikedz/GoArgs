@@ -55,12 +55,7 @@ func (p *Parser) SetShortFlag(short rune, longname string) error {
     if !ok {
         return fmt.Errorf("Flag '%s' not yet defined", longname)
     }
-    switch def.(type) {
-    case BoolDef, CountDef:
-        p.shortnames[short] = def
-    default:
-        return fmt.Errorf("'%s' is neither Bool nor Count", longname)
-    }
+    p.shortnames[short] = def
 
     return nil
 }
@@ -130,13 +125,18 @@ func (p *Parser) Parse(args []string, ignore_unknown bool) error {
                 switch def.(type) {
                 case BoolDef:
                     def.(BoolDef).activate()
+                    continue
                 case CountDef:
                     def.(CountDef).increment()
+                    continue
                 default:
-                    panic(fmt.Sprintf("Internal Error: Impossible type match: %t", def))
+                    if len(token) == 2 {
+                        def_ifc = def
+                    } else {
+                        return fmt.Errorf("Please specify '%c' on its own as '-%c VALUE'", sflag, sflag)
+                    }
                 }
             }
-            continue
         }
 
         if def_ifc != nil {

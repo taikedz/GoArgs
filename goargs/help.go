@@ -6,6 +6,15 @@ import (
 	"strings"
 )
 
+func (p *Parser) runeFromLong(name string) (rune, error) {
+	for char, def := range p.shortnames {
+		if name == def.getName() {
+			return char, nil
+		}
+	}
+	return '-', fmt.Errorf("No short flag found for '%s'", name)
+}
+
 func (p *Parser) SPrintHelp() string {
 	// return a string of formatted help information
 	helplines := []string{p.helptext, ""}
@@ -15,9 +24,15 @@ func (p *Parser) SPrintHelp() string {
 		// Flag format
 		switch def.(type) {
 		case BoolDef, CountDef:
-			helplines = append(helplines, fmt.Sprintf("  --%s", name)) // TODO - list short flag
+			helplines = append(helplines, fmt.Sprintf("  --%s", name))
+			if sflag, err := p.runeFromLong(name); err == nil {
+				helplines = append(helplines, fmt.Sprintf("  -%c", sflag))
+			}
 		default:
 			helplines = append(helplines, fmt.Sprintf("  --%s VALUE", name))
+			if sflag, err := p.runeFromLong(name); err == nil {
+				helplines = append(helplines, fmt.Sprintf("  -%c VALUE", sflag))
+			}
 		}
 
 		// Flag default value
@@ -36,7 +51,7 @@ func (p *Parser) SPrintHelp() string {
 		case DurationDef: // DurationDef, UnmarshalerDef
 			helplines = append(helplines, fmt.Sprintf("    default: %v", def.(DurationDef).defval))
 		case CountDef:
-			helplines = append(helplines, fmt.Sprintf("(each appearance of '--%s' is counted)", name))
+			helplines = append(helplines, fmt.Sprintf("    (each appearance is counted)"))
 		default:
 			panic(fmt.Sprintf("Internal error: Uncatered type '%t'", def))
 		}
