@@ -58,7 +58,7 @@ func (p *Parser) SetShortFlag(short rune, longname string) error {
     }
     def, ok := p.definitions[longname]
     if !ok {
-        return fmt.Errorf("Flag '%s' not yet defined", longname)
+        return fmt.Errorf("Flag '--%s' not yet defined", longname)
     }
     p.shortnames[short] = def
 
@@ -176,7 +176,7 @@ func (p *Parser) Parse(args []string, ignore_unknown bool) error {
 
 /* Parse the program's CLI arguments. Must be called before accessing flags' variables.
 
-If "-" or "--help" is found before the first "--", then help is printed.
+If "-h" or "--help" is found before the first "--", then help is printed.
 
 See Parse() for further behaviours.
 */

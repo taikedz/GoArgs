@@ -7,6 +7,14 @@ The codebase aims to remain small, ensuring it is easy to audit as an external d
 
 Note that GoArgs does not intend to be a drop-in replacement for `flag` given its intent to improve on some behaviours. Simple usage of `flag` may be able to drop-in `goargs`, but this is not a design goal.
 
+## To Do
+
+* More comprehensive unit testing
+* Documentation
+* Make relevant items private
+
+## Features
+
 Compatibility wtih `flag`:
 
 * Create pointer from argument declaration (`flag.<Type>()` equivalents)

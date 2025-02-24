@@ -6,8 +6,6 @@ import (
     "strconv"
 )
 
-// To add: float64, int64, uint, encoding.TextUnmarshaler
-
 // ======
 
 type StringDef struct {
