@@ -67,11 +67,12 @@ func main() {
     moreargs := goargs.Unpack(os.Args[1:], &action)
     
     if action == "send" {
-        var send_p goargs.Parser
+        send_p := goargs.NewParser("send FILE SERVER")
         var file string
         var server string
 
         // Use the parser to detect any/unexpected flags
+        // And automatically produce help text if "--help" is in the args
         if err := send_p.Parse(moreargs, false); err != nil {
             fmt.Printf("%v\n", err)
             os.Exit(1)
@@ -86,12 +87,14 @@ func main() {
         DoSend(file, server, encrypt) // ...
 
     } else if action == "recv" {
-        var recv_p goargs.Parser
+        recv_p := goargs.NewParser("recv [--decrypt] SERVER FILE -- SERVER_COMMAND ...")
         var file string
         var server string
 
         // Declare an argument and variable to access result from
-        decrypt := recv_p.Bool("decrypt", false)
+        decrypt := recv_p.Bool("decrypt", false, "Attempt decrypt on incoming data")
+        // Also allow the flag to have a short notation
+        recv_p.SetShortFlag('d', "decrypt")
 
         // Detect flags, isolate positionals and extras
         if err := recv_p.Parse(moreargs, false); err != nil {

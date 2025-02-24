@@ -93,10 +93,13 @@ Parse custom token sequence.
 * If ignore_unknown is false, returns an error for unrecognised flags
 * If ignore_unknown is true, retains unrecognised flags in the positional arguments set
 
+If "-h" or "--help" is found before the first "--", then help is printed and process exits.
+
 Panics if a flag is defined twice on the same name, or if the flag has a bad name.
 Acceptable flag names must be at least two characters long, and start with an ASCII-7 alphabetical character.
 */
 func (p *Parser) Parse(args []string, ignore_unknown bool) error {
+    p.autoHelp(args)
     for i := 0; i<len(args); i++ {
         token := args[i]
         var def_ifc VarDef = nil // Interface types are a bit pointery (can be nil), but cannot ever be indirected with `*`
@@ -176,15 +179,15 @@ func (p *Parser) Parse(args []string, ignore_unknown bool) error {
 
 /* Parse the program's CLI arguments. Must be called before accessing flags' variables.
 
-If "-h" or "--help" is found before the first "--", then help is printed.
-
 See Parse() for further behaviours.
 */
 func (p *Parser) ParseCliArgs(ignore_unknown bool) error {
-    if i := FindHelpFlag(os.Args[1:]); i >= 0 {
-        p.PrintHelp()
-        os.Exit(0)
-    }
     return p.Parse(os.Args[1:], ignore_unknown)
 }
 
+func (p *Parser) autoHelp(args []string) {
+    if i := FindHelpFlag(args); i >= 0 {
+        p.PrintHelp()
+        os.Exit(0)
+    }
+}
