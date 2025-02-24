@@ -26,17 +26,17 @@ Improved features:
 * Parser recognises `--` as end of direct arguments, and stores subsequent raw tokens
 * Parser can opt to ignore unknown flags, or return error on unknown arguments, as-needed.
 * Unpacking methods `Unpack()` and `UnpackExactly()` help extract and assign positional arguments
-* Long-name flags are specified only with double-hyphen notation (to support short flags combination notations)
+* Long-name flags are specified only with double-hyphen notation
+* Short flags notation for boolean flags (`Parser.SetShortFlag("v", "verbose")`)
+    * Short flags can be combined with single-hyphen notation (e.g. `-eux` for `-e -u -x`, or `-vv` for `-v -v` or `--verbose --verbose`)
 * Help obtainable as string or printed; help arguments printed in declaration order
 * Help flags `--help` and `-h` automatically detected when using `ParseCliArgs()`, except when appearing after first `--`
 
 Yet to implement:
 
+* Short flags for non-bool type
 * Compatibility
     * Flag event function (`flag.Func` equivalent)
-* Short flags
-    * Specify short notation for boolean flags (`Parser.ShortFlag("v", "verbose")`, compatible with `flag.BoolFunc`)
-    * Short flags can be combined with single-hyphen notation (e.g. `-eux` for `-e -u -x`, or `-vv` for `-v -v` or `--verbose --verbose`)
 
 ## Example
 

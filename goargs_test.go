@@ -50,18 +50,19 @@ func Test_ParseArgs_Specials(t *testing.T) {
 	parser := goargs.NewParser("")
 
 	verbose_lvl := parser.Count("verbose", "How verbose to be")
+	parser.SetShortFlag('v', "verbose")
 	choice := parser.Choices("occupation", []string{"studying", "employed", "free", "Current occupation"}, "job")
 
-	args := []string{"--occupation", "employed", "--verbose", "--verbose", "--unknown", "--", "alpha", "beta"}
-	if err := parser.Parse(args, true); err != nil {
+	args := []string{"--occupation", "employed", "--verbose", "-v", "--verbose", "--", "alpha", "beta"}
+	if err := parser.Parse(args, false); err != nil {
 		t.Errorf("Failed parse: %v", err)
 		return
 	}
 
-	CheckEqual(t, *verbose_lvl, 2)
+	CheckEqual(t, *verbose_lvl, 3)
 	CheckEqual(t, *choice, "employed")
 
-	if err := parser.Parse([]string{"--occupation", "unknown"}, true); err == nil {
+	if err := parser.Parse([]string{"--occupation", "unknown"}, false); err == nil {
 		t.Errorf("'occupation unknown' Should have failed, but var assigned: '%s'", *choice)
 	}
 }

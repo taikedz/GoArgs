@@ -20,6 +20,7 @@ type VarDef interface {
 //  and be made to parse different sequences of argument tokens.
 type Parser struct {
     definitions map[string]VarDef
+    shortnames map[rune]VarDef
     longnames []string
     helptext string
     // Non-flag tokens in the arguments
@@ -31,6 +32,7 @@ type Parser struct {
 func NewParser(helptext string) Parser {
     var p Parser
     p.definitions = make(map[string]VarDef)
+    p.shortnames = make(map[rune]VarDef)
     p.helptext = helptext
     return p
 }
@@ -43,6 +45,24 @@ func (p *Parser) enqueueName(name string) {
         panic(fmt.Sprintf("Invalid flag name '%s'. Must be minimum two characters long and start with letter"))
     }
     p.longnames = append(p.longnames, name)
+}
+
+func (p *Parser) SetShortFlag(short rune, longname string) error {
+    if gotname, ok := p.shortnames[short]; ok {
+        return fmt.Errorf("'-%c' already defined against '%s'", short, gotname)
+    }
+    def, ok := p.definitions[longname]
+    if !ok {
+        return fmt.Errorf("Flag '%s' not yet defined", longname)
+    }
+    switch def.(type) {
+    case BoolDef, CountDef:
+        p.shortnames[short] = def
+    default:
+        return fmt.Errorf("'%s' is neither Bool nor Count", longname)
+    }
+
+    return nil
 }
 
 // Args returns the positional tokens from the parsed arguments
@@ -101,14 +121,27 @@ func (p *Parser) Parse(args []string, ignore_unknown bool) error {
                 return fmt.Errorf("Unknown flag %s", token)
             }
 
+        } else if token[:1] == "-" && len(token) > 1 {
+            for _, sflag := range token[1:] {
+                def, ok := p.shortnames[sflag]
+                if !ok {
+                    return fmt.Errorf("Unknown short flag '%c'", sflag)
+                }
+                switch def.(type) {
+                case BoolDef:
+                    def.(BoolDef).activate()
+                case CountDef:
+                    def.(CountDef).increment()
+                default:
+                    panic(fmt.Sprintf("Internal Error: Impossible type match: %t", def))
+                }
+            }
+            continue
         }
-
-        // TODO - support short names?
 
         if def_ifc != nil {
             switch def_ifc.(type) {
                 case BoolDef:
-                    // switches a boolean to opposite of its default value
                     def_ifc.(BoolDef).activate()
                 case CountDef:
                     def_ifc.(CountDef).increment()
