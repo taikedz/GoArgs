@@ -4,6 +4,7 @@ package goargs
 import (
 	"fmt"
 	"strings"
+	"reflect"
 )
 
 func (p *Parser) runeFromLong(name string) (rune, error) {
@@ -13,6 +14,12 @@ func (p *Parser) runeFromLong(name string) (rune, error) {
 		}
 	}
 	return '-', fmt.Errorf("No short flag found for '%s'", name)
+}
+
+func typeName(def VarDef) string {
+	tokens := strings.Split(fmt.Sprintf("%s", reflect.TypeOf(def)), ".")
+	typename := tokens[len(tokens)-1]
+	return strings.ToUpper(typename[:len(typename)-3])
 }
 
 func (p *Parser) SPrintHelp() string {
@@ -29,9 +36,10 @@ func (p *Parser) SPrintHelp() string {
 				helplines = append(helplines, fmt.Sprintf("  -%c", sflag))
 			}
 		default:
-			helplines = append(helplines, fmt.Sprintf("  --%s VALUE", name))
+			tname := typeName(def)
+			helplines = append(helplines, fmt.Sprintf("  --%s %s", name, tname))
 			if sflag, err := p.runeFromLong(name); err == nil {
-				helplines = append(helplines, fmt.Sprintf("  -%c VALUE", sflag))
+				helplines = append(helplines, fmt.Sprintf("  -%c %s", sflag, tname))
 			}
 		}
 

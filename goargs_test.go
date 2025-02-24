@@ -167,7 +167,7 @@ func Test_helpstr(t *testing.T) {
 	parser.Bool("whack", false, "Slam it?")
 
 	helptext := parser.SPrintHelp()
-	expect := "Do lots\n\n  --gopher VALUE\n    default: gaffer\n    Wee rat\n  --whack\n    default: false\n    Slam it?"
+	expect := "Do lots\n\n  --gopher STRING\n    default: gaffer\n    Wee rat\n  --whack\n    default: false\n    Slam it?"
 	if helptext != expect {
 		t.Errorf("Mismatched help strings. Got:\n<<%s>>\nInstead of:\n<<%s>>", helptext, expect)
 	}
