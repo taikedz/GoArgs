@@ -13,7 +13,7 @@ type CountDef struct {
 }
 func (self CountDef) getHelpString() string { return self.helpstr }
 func (self CountDef) getName() string { return self.name }
-func (self CountDef) assign(value string) error { return fmt.Errorf("Internal error: Invalid aciton. Use increment()") }
+func (self CountDef) assign(value string) error { panic("Invalid call to assign() on CountDef") }
 func (self CountDef) increment() { *self.value++ }
 
 func (p *Parser) CountVar(value *int, name string, helpstr string) {
@@ -55,4 +55,22 @@ func (p *Parser) Choices(name string, choices []string, helpstr string) *string 
     var val string
     p.ChoicesVar(&val, name, choices, helpstr)
     return &val
+}
+
+// =======
+
+type FuncDef struct {
+    name string
+    helpstr string
+    innerfunc func(string) error
+}
+func (self FuncDef) getHelpString() string { return self.helpstr }
+func (self FuncDef) getName() string { return self.name }
+func (self FuncDef) assign(value string) error { panic("Invalid call to assign() on FuncDef") }
+func (self FuncDef) call(s string) error {return self.innerfunc(s) }
+
+func (p *Parser) Func(name string, helpstr string, funcdef func(string) error) {
+    vdef := FuncDef{name, helpstr, funcdef}
+    p.definitions[name] = vdef
+    p.enqueueName(name)
 }

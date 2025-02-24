@@ -8,6 +8,8 @@ import (
     "regexp"
 )
 
+const _VALID_SFLAGS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+
 type VarDef interface {
     getName() string
     assign(string) error
@@ -48,6 +50,9 @@ func (p *Parser) enqueueName(name string) {
 }
 
 func (p *Parser) SetShortFlag(short rune, longname string) error {
+    if ! strings.ContainsRune(_VALID_SFLAGS, short) {
+        panic(fmt.Sprintf("Internal error: cannot use rune %c", short))
+    }
     if gotname, ok := p.shortnames[short]; ok {
         return fmt.Errorf("'-%c' already defined against '%s'", short, gotname)
     }
@@ -151,8 +156,13 @@ func (p *Parser) Parse(args []string, ignore_unknown bool) error {
                         if i >= len(args) { return fmt.Errorf("Expected value after %s", token) }
                         nextVal = &args[i]
                     }
-                    if err := def_ifc.assign(*nextVal); err != nil {
-                        return err
+                    switch def_ifc.(type) {
+                    case FuncDef:
+                        def_ifc.(FuncDef).call(*nextVal)
+                    default:
+                        if err := def_ifc.assign(*nextVal); err != nil {
+                            return err
+                        }
                     }
             }
 

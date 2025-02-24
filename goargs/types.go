@@ -203,7 +203,7 @@ type BoolDef struct {
 }
 func (self BoolDef) getHelpString() string { return self.helpstr }
 func (self BoolDef) getName() string { return self.name }
-func (self BoolDef) assign(value string) error { return fmt.Errorf("Internal error: Invalid action. Use activate()") }
+func (self BoolDef) assign(value string) error { panic("Invalid call to assign() on BoolDef") }
 func (self BoolDef) activate() { *self.value = !self.defval }
 
 func (p *Parser) BoolVar(value *bool, name string, defval bool, helpstr string) {

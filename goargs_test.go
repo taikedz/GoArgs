@@ -75,6 +75,13 @@ func Test_ParseArgs_Shortflags(t *testing.T) {
 	admit := parser.Bool("admit", false, "help")
 	parser.SetShortFlag('a', "admit")
 
+	var queue []string
+	parser.Func("queue", "help", func(s string) error {
+		queue = append(queue, s)
+		return nil
+	})
+	parser.SetShortFlag('Q', "queue")
+
 	name := parser.String("name", "who", "help")
 	parser.SetShortFlag('N', "name")
 
@@ -82,12 +89,13 @@ func Test_ParseArgs_Shortflags(t *testing.T) {
 	CheckEqual(t, *admit, false)
 	CheckEqual(t, *name, "who")
 
-	if err := parser.Parse([]string{"-vav", "-N", "Rae"}, false); err != nil {
+	if err := parser.Parse([]string{"-Q", "one", "-vav", "-N", "Rae", "--queue", "two"}, false); err != nil {
 		t.Errorf("Failed shortflags parse: %v", err)
 	}
 	CheckEqual(t, *verbose, 2)
 	CheckEqual(t, *admit, true)
 	CheckEqual(t, *name, "Rae")
+	CheckEqualArr(t, queue, []string{"one", "two"})
 
 	if err := parser.Parse([]string{"-vavN", "Roo"}, false); err == nil {
 		t.Errorf("Shortflags parse with combined vavN should have failed, value of name is '%s'", *name)

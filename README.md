@@ -1,21 +1,21 @@
-# GoArgs - a simple and versatile Go arguments parser
+# GoArgs - a simple and flexible Go arguments parser
 
-Go's default `flag` library feels rudimentary; GoArgs aims to provide a simple yet more featureful module for parsing arguments.
+Go's default `flag` library feels rudimentary; GoArgs aims to provide a simple yet more flexible module for parsing arguments.
 The usage style matches the standard `flag` library for limited compatibility.
 
 The codebase aims to remain small, ensuring it is easy to audit as an external dependency. It is not as fully featured as other implementations out there. See [alternatives](#alternatives) for more options.
 
-Note that GoArgs does not intend to be a drop-in replacement for `flags` given its intent to improve on some behaviours. Simple usage of `flags` may be able to drop-in `goargs`, but
-this is not a design goal.
+Note that GoArgs does not intend to be a drop-in replacement for `flag` given its intent to improve on some behaviours. Simple usage of `flag` may be able to drop-in `goargs`, but this is not a design goal.
 
 Compatibility wtih `flag`:
 
 * Create pointer from argument declaration (`flag.<Type>()` equivalents)
 * Pass pointer into argument delcaration (`flag.<Type>Var()` equivalents)
+* Flag event function (`flag.Func` equivalent)
 
 Types:
 
-* Basic: String, Int, Int64, Uint, Float, Float64, Bool, time.Duration (for general usage)
+* Basic: String, Int, Int64, Uint, Float, Float64, Bool, time.Duration
 * Counter: incerments a counter every time the flag is seen (such as `-vvv` for incresed levels of verbosity)
 * Choices: predefine a number of possible values for a given flag
 
@@ -30,12 +30,8 @@ Improved features:
 * Short flags notation (`Parser.SetShortFlag("v", "verbose")`)
     * Short flags can be combined with single-hyphen notation (e.g. `-eux` for `-e -u -x`, or `-vv` for `-v -v` or `--verbose --verbose`)
 * Help obtainable as string or printed; help arguments always listed in declaration order
-* Help flags `--help` and `-h` automatically detected when using `ParseCliArgs()`, except when appearing after first `--`
+* Help flags `--help` and `-h` automatically detected when using `ParseCliArgs()`, except when appearing after the first `--`
 
-Yet to implement:
-
-* Compatibility
-    * Flag event function (`flag.Func` equivalent)
 
 ## Example
 
@@ -111,9 +107,13 @@ func main() {
 
 ## Alternatives
 
-Why use `taikedz/GoArgs` ? If your needs are minimal and you literally need to copy the files in, or to fully understand it (e.g. for auditability), then maybe you have a case to use this lib. Elsewise, please treat it as a learning tool for its easy-to-read implementation. This package did begin as a learning project, started whilst on an airplane.
+Why use this `taikedz/GoArgs` ? If your needs are minimal and/or you literally need to copy the files in, then maybe you have a case to use this lib. I have made a point of keeping the feature set relatively straighforward and flexible, and in keeping with the standard library's style. I have also tried to make a point to keep the code itself straightforwad so that you may audit it.
+
+Elsewise, please treat it as a learning tool for its easy-to-read implementation. This package did begin as a learning project, started whilst on an airplane.
 
 More-established packages exist that also offer partial drop-in capability, as well as support for short options, and `--` terminated arguments sequences:
 
-* <https://pkg.go.dev/github.com/spf13/pflag>
-* <https://pkg.go.dev/github.com/jessevdk/go-flags>
+* Two which I am aware of:
+    * <https://pkg.go.dev/github.com/spf13/pflag>
+    * <https://pkg.go.dev/github.com/jessevdk/go-flags>
+* Search the go package listings in general: <https://pkg.go.dev/search?q=flag&m=>
