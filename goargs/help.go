@@ -24,9 +24,12 @@ func (p *Parser) SPrintHelp() string {
 		switch def.(type) {
 		case StringDef:
 			helplines = append(helplines, fmt.Sprintf("    default: %s", def.(StringDef).defval))
-		case IntDef: // Eventually "case IntDef, UintDef:"
+		case ChoicesDef:
+			helplines = append(helplines, fmt.Sprintf("    default: %s", def.(ChoicesDef).choices[0]))
+			helplines = append(helplines, fmt.Sprintf("    choices: %s", strings.Join(def.(ChoicesDef).choices, ", ") ))
+		case IntDef, Int64Def, UintDef:
 			helplines = append(helplines, fmt.Sprintf("    default: %d", def.(IntDef).defval))
-		case FloatDef: // FloatDef, Float64Def
+		case FloatDef, Float64Def:
 			helplines = append(helplines, fmt.Sprintf("    default: %f", def.(FloatDef).defval))
 		case BoolDef:
 			helplines = append(helplines, fmt.Sprintf("    default: %t", def.(BoolDef).defval))
@@ -34,6 +37,8 @@ func (p *Parser) SPrintHelp() string {
 			helplines = append(helplines, fmt.Sprintf("    default: %v", def.(DurationDef).defval))
 		case CountDef:
 			helplines = append(helplines, fmt.Sprintf("(each appearance of '--%s' is counted)", name))
+		default:
+			panic(fmt.Sprintf("Internal error: Uncatered type '%t'", def))
 		}
 
 		// Flag help string

@@ -17,6 +17,7 @@ Types:
 
 * Basic: String, Int, Int64, Uint, Float, Float64, Bool, time.Duration (for general usage)
 * Counter: incerments a counter every time the flag is seen (such as `-vvv` for incresed levels of verbosity)
+* Choices: predefine a number of possible values for a given flag
 
 Improved features:
 
@@ -33,7 +34,6 @@ Yet to implement:
 
 * Compatibility
     * Flag event function (`flag.Func` equivalent)
-* StringChoices argument type
 * Short flags
     * Specify short notation for boolean flags (`Parser.ShortFlag("v", "verbose")`, compatible with `flag.BoolFunc`)
     * Short flags can be combined with single-hyphen notation (e.g. `-eux` for `-e -u -x`, or `-vv` for `-v -v` or `--verbose --verbose`)

@@ -26,16 +26,15 @@ func CheckEqualArr[V string|int|float32|bool](t *testing.T, exp_value []V, got_v
 
 // ===
 
-func Test_ParseArgs_GetVar(t *testing.T) {
+func Test_ParseArgs_MakeVar(t *testing.T) {
 	parser := goargs.NewParser("")
 
 	name := parser.String("name", "nobody", "Their name")
 	age := parser.Int("age", -1, "Their age")
 	height := parser.Float("height", 0.0, "Their height")
 	admit := parser.Bool("admit", false, "Whether to admit")
-	verbose_lvl := parser.Count("verbose", "How verbose to be")
 
-	args := []string{"one", "--name", "Alex", "two", "--age", "20", "--height", "1.8", "--admit", "--verbose", "--verbose", "--unknown", "--", "alpha", "beta"}
+	args := []string{"one", "--name", "Alex", "two", "--age", "20", "--height", "1.8", "--admit", "--unknown", "--", "alpha", "beta"}
 	if err := parser.Parse(args, true); err != nil {
 		t.Errorf("Failed parse: %v", err)
 		return
@@ -45,7 +44,26 @@ func Test_ParseArgs_GetVar(t *testing.T) {
 	CheckEqual(t, *age, 20)
 	CheckEqual(t, *height, 1.8)
 	CheckEqual(t, *admit, true)
+}
+
+func Test_ParseArgs_Specials(t *testing.T) {
+	parser := goargs.NewParser("")
+
+	verbose_lvl := parser.Count("verbose", "How verbose to be")
+	choice := parser.Choices("occupation", []string{"studying", "employed", "free", "Current occupation"}, "job")
+
+	args := []string{"--occupation", "employed", "--verbose", "--verbose", "--unknown", "--", "alpha", "beta"}
+	if err := parser.Parse(args, true); err != nil {
+		t.Errorf("Failed parse: %v", err)
+		return
+	}
+
 	CheckEqual(t, *verbose_lvl, 2)
+	CheckEqual(t, *choice, "employed")
+
+	if err := parser.Parse([]string{"--occupation", "unknown"}, true); err == nil {
+		t.Errorf("'occupation unknown' Should have failed, but var assigned: '%s'", *choice)
+	}
 }
 
 func Test_ParseArgs_Good(t *testing.T) {
