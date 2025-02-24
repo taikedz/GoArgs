@@ -2,7 +2,7 @@ package goargs
 
 import (
 	"testing"
-	"net.taikedz.goargs/goargs"
+	"github.com/taikedz/goargs/goargs"
 )
 
 func CheckEqual[V string|int|float32|bool](t *testing.T, exp_value V, got_value V) {

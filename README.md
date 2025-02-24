@@ -55,7 +55,7 @@ package main
 import (
     "fmt"
     "os"
-    "net.taikedz.goargs/goargs"
+    "github.com/taikedz/goargs/goargs"
 )
 
 func main() {
