@@ -20,10 +20,10 @@ func Test_ParseArgs_MakeVar(t *testing.T) {
 		return
 	}
 
-	CheckEqual(t, *name, "Alex")
-	CheckEqual(t, *age, 20)
-	CheckEqual(t, *height, 1.8)
-	CheckEqual(t, *admit, true)
+	CheckEqual(t, "Alex", *name)
+	CheckEqual(t, 20,     *age)
+	CheckEqual(t, 1.8,    *height)
+	CheckEqual(t, true,   *admit)
 }
 
 func Test_ParseArgs_Specials(t *testing.T) {
@@ -39,8 +39,8 @@ func Test_ParseArgs_Specials(t *testing.T) {
 		return
 	}
 
-	CheckEqual(t, *verbose_lvl, 3)
-	CheckEqual(t, *choice, "employed")
+	CheckEqual(t, 3, *verbose_lvl)
+	CheckEqual(t, "employed", *choice)
 
 	if err := parser.Parse([]string{"--occupation", "unknown"}, false); err == nil {
 		t.Errorf("'occupation unknown' Should have failed, but var assigned: '%s'", *choice)
@@ -65,24 +65,24 @@ func Test_ParseArgs_Shortflags(t *testing.T) {
 	name := parser.String("name", "who", "help")
 	parser.SetShortFlag('N', "name")
 
-	CheckEqual(t, *verbose, 0)
-	CheckEqual(t, *admit, false)
-	CheckEqual(t, *name, "who")
+	CheckEqual(t, 0, *verbose)
+	CheckEqual(t, false, *admit)
+	CheckEqual(t, "who", *name)
 
 	if err := parser.Parse([]string{"-Q", "one", "-vav", "-N", "Rae", "--queue", "two"}, false); err != nil {
 		t.Errorf("Failed shortflags parse: %v", err)
 	}
-	CheckEqual(t, *verbose, 2)
-	CheckEqual(t, *admit, true)
-	CheckEqual(t, *name, "Rae")
+	CheckEqual(t, 2, *verbose)
+	CheckEqual(t, true, *admit)
+	CheckEqual(t, "Rae", *name)
 	CheckEqualArr(t, queue, []string{"one", "two"})
 
 	if err := parser.Parse([]string{"-vavN", "Roo"}, false); err == nil {
 		t.Errorf("Shortflags parse with combined vavN should have failed, value of name is '%s'", *name)
 	}
-	CheckEqual(t, *verbose, 4)
-	CheckEqual(t, *admit, true)
-	CheckEqual(t, *name, "Rae")
+	CheckEqual(t, 4, *verbose)
+	CheckEqual(t, true, *admit)
+	CheckEqual(t, "Rae", *name)
 
 	if err := parser.SetShortFlag('u', "unknown"); err == nil {
 		t.Errorf("Setting unknown short flag should have failed")
@@ -108,13 +108,13 @@ func Test_ParseArgs_Good(t *testing.T) {
 		return
 	}
 
-	CheckEqual(t, name, "Alex")
-	CheckEqual(t, age, 20)
-	CheckEqual(t, height, 1.8)
-	CheckEqual(t, admit, true)
+	CheckEqual(t, "Alex", name)
+	CheckEqual(t, 20,     age)
+	CheckEqual(t, 1.8,    height)
+	CheckEqual(t, true,   admit)
 
-	CheckEqualArr(t, parser.Args(), []string{"one", "two", "--unknown"})
-	CheckEqualArr(t, parser.PassdownArgs, []string{"alpha", "beta"})
+	CheckEqualArr(t, []string{"one", "two", "--unknown"}, parser.Args())
+	CheckEqualArr(t, []string{"alpha", "beta"},           parser.PassdownArgs)
 }
 
 func Test_ParseArgs_Fail(t *testing.T) {
