@@ -1,30 +1,10 @@
-package goargs
+package goargsunittest
 
 import (
 	"testing"
 	"github.com/taikedz/goargs/goargs"
 )
 
-func CheckEqual[V string|int|float32|bool](t *testing.T, exp_value V, got_value V) {
-	if exp_value != got_value {
-		t.Errorf("Got %v // Exp %v", exp_value, got_value)
-	}
-}
-
-func CheckEqualArr[V string|int|float32|bool](t *testing.T, exp_value []V, got_value []V) {
-	if len(exp_value) != len(got_value) {
-		t.Errorf("Got %v // Exp %v", exp_value, got_value)
-	}
-
-	for i:=0; i<len(exp_value); i++ {
-		if exp_value[i] != got_value[i] {
-			t.Errorf("Got %v // Exp %v", exp_value, got_value)
-			return
-		}
-	}
-}
-
-// ===
 
 func Test_ParseArgs_MakeVar(t *testing.T) {
 	parser := goargs.NewParser("")
@@ -158,52 +138,4 @@ func Test_ParseArgs_Fail(t *testing.T) {
 		t.Errorf("Should have failed for --unknown ! Parser content is: %v", parser)
 	}
 	parser.ClearParsedData()
-}
-
-func Test_helpstr(t *testing.T) {
-	parser := goargs.NewParser("Do lots")
-
-	parser.String("gopher", "gaffer", "Wee rat")
-	parser.Bool("whack", false, "Slam it?")
-
-	helptext := parser.SPrintHelp()
-	expect := "Do lots\n\n  --gopher STRING\n    default: gaffer\n    Wee rat\n  --whack\n    default: false\n    Slam it?"
-	if helptext != expect {
-		t.Errorf("Mismatched help strings. Got:\n<<%s>>\nInstead of:\n<<%s>>", helptext, expect)
-	}
-}
-
-func Test_findhelp(t *testing.T) {
-	CheckEqual(t, 1, goargs.FindHelpFlag([]string{"a", "-h", "--help"}))
-	CheckEqual(t, 0, goargs.FindHelpFlag([]string{"-h", "next", "--help"}))
-	CheckEqual(t, 2, goargs.FindHelpFlag([]string{"-he", "next", "--help"}))
-	CheckEqual(t, -1, goargs.FindHelpFlag([]string{"a", "--", "-h", "--help"}))
-}
-
-func Test_Unpack(t *testing.T) {
-	var name string
-	var count int
-	var ratio float32
-	args := []string{"Jay Smith", "15", "37.8", "other", "stuff"}
-
-	if remains, err := goargs.Unpack(args, &name, &count, &ratio); err == nil {
-		CheckEqual(t, name, "Jay Smith")
-		CheckEqual(t, count, 15)
-		CheckEqual(t, ratio, 37.8)
-		CheckEqualArr(t, remains, []string{"other", "stuff"})
-	} else {
-		t.Errorf("Should have parsed OK, got error: %v", err)
-	}
-
-	if err := goargs.UnpackExactly(args[:3], &name, &count, &ratio); err != nil {
-		t.Errorf("Should have succeeded!")
-	}
-
-	if err := goargs.UnpackExactly(args, &name, &count, &ratio); err == nil {
-		t.Errorf("Should have failed due to excess tokens!")
-	}
-
-	if err := goargs.UnpackExactly(args[:2], &name, &count, &ratio); err == nil {
-		t.Errorf("Should have failed due to insufficient tokens!")
-	}
 }
