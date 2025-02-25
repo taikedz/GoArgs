@@ -7,9 +7,9 @@ The codebase aims to remain small, ensuring it is easy to audit as an external d
 
 ## To Do
 
-* More comprehensive unit testing
 * Documentation
 * Make relevant items private
+* Re-evaluate multi-error-type returns/error classfication
 
 ## Features
 
