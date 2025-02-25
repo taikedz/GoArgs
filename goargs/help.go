@@ -74,6 +74,7 @@ func (p *Parser) SPrintHelp() string {
 
 func (p *Parser) PrintHelp() {
 	print(p.SPrintHelp())
+    println("")
 }
 
 func FindHelpFlag(tokens []string) int {
