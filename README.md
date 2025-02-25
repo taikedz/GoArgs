@@ -59,7 +59,6 @@ import (
 )
 
 func main() {
-    var command goargs.Parser
     var action string
 
     // Use `Unpack()` for processing leftmost positional arguments
