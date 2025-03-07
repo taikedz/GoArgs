@@ -100,6 +100,9 @@ Acceptable flag names must be at least two characters long, and start with an AS
 */
 func (p *Parser) Parse(args []string, ignore_unknown bool) error {
     p.autoHelp(args)
+    args, passdowns := SplitTokensBefore("--", args)
+    p.PassdownArgs = passdowns
+
     for i := 0; i<len(args); i++ {
         token := args[i]
         var def_ifc VarDef = nil // Interface types are a bit pointery (can be nil), but cannot ever be indirected with `*`
@@ -107,12 +110,6 @@ func (p *Parser) Parse(args []string, ignore_unknown bool) error {
 
         if token[:2] == "--" {
             longname := token[2:]
-            if longname == "" {
-                // We found the first delimiter for passdown arguments
-                // Retain them as such, and stop parsing
-                p.PassdownArgs = args[i+1:]
-                return nil
-            }
             if strings.Contains(longname, "=") {
                 seq := strings.SplitN(longname, "=", 2)
                 longname = seq[0]
