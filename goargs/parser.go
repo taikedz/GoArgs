@@ -108,7 +108,7 @@ func (p *Parser) Parse(args []string, ignore_unknown bool) error {
         var def_ifc VarDef = nil // Interface types are a bit pointery (can be nil), but cannot ever be indirected with `*`
         var nextVal *string = nil
 
-        if token[:2] == "--" {
+        if len(token) >= 2 && token[:2] == "--" {
             longname := token[2:]
             if strings.Contains(longname, "=") {
                 seq := strings.SplitN(longname, "=", 2)
@@ -123,9 +123,11 @@ func (p *Parser) Parse(args []string, ignore_unknown bool) error {
 
         } else if token[:1] == "-" && len(token) > 1 {
             for _, sflag := range token[1:] {
-                def, ok := p.shortnames[sflag]
-                if !ok {
+                def, found_sflag := p.shortnames[sflag]
+                if !found_sflag && !ignore_unknown {
                     return fmt.Errorf("Unknown short flag '%c'", sflag)
+                } else if !found_sflag {
+                    break
                 }
                 switch def.(type) {
                 case BoolDef:

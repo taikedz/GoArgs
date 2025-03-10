@@ -139,3 +139,20 @@ func Test_ParseArgs_Fail(t *testing.T) {
 	}
 	parser.ClearParsedData()
 }
+
+func Test_ParseArgs_Unknowns(t *testing.T) {
+    tokens := []string{"a", "--unknown", "b", "-x", "c"}
+    parser := goargs.NewParser("")
+
+    if err := parser.Parse(tokens, false); err == nil {
+        t.Errorf("Should have failed parsing tokens")
+    }
+
+    parser.ClearParsedData()
+
+    if err := parser.Parse(tokens, true); err != nil {
+        t.Errorf("Failed to correctly parse unknown tokens: %s", err)
+    } else {
+        CheckEqualArr(t, tokens, parser.Args())
+    }
+}
