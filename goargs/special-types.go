@@ -59,6 +59,31 @@ func (p *Parser) Choices(name string, choices []string, helpstr string) *string 
 
 // =======
 
+type AppenderDef struct {
+    name string
+    value *[]string
+    helpstr string
+}
+func (self AppenderDef) getHelpString() string { return self.helpstr }
+func (self AppenderDef) getName() string { return self.name }
+func (self AppenderDef) assign(value string) error {
+    *self.value = append(*self.value, value)
+    return nil
+}
+
+func (p *Parser) AppenderVar(value *[]string, name string, helpstr string) {
+    vdef := AppenderDef{name, value, helpstr}
+    p.definitions[name] = vdef
+    p.enqueueName(name)
+}
+func (p *Parser) Appender(name string, helpstr string) *[]string {
+    var val []string
+    p.AppenderVar(&val, name, helpstr)
+    return &val
+}
+
+// =======
+
 type FuncDef struct {
     name string
     helpstr string
@@ -69,7 +94,7 @@ func (self FuncDef) getName() string { return self.name }
 func (self FuncDef) assign(value string) error { panic("Invalid call to assign() on FuncDef") }
 func (self FuncDef) call(s string) error {return self.innerfunc(s) }
 
-func (p *Parser) Func(name string, helpstr string, funcdef func(string) error) {
+func (p *Parser) Func(name string, funcdef func(string) error, helpstr string) {
     vdef := FuncDef{name, helpstr, funcdef}
     p.definitions[name] = vdef
     p.enqueueName(name)

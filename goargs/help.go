@@ -36,7 +36,13 @@ func (p *Parser) SPrintHelp() string {
 				helplines = append(helplines, fmt.Sprintf("  -%c", sflag))
 			}
 		default:
-			tname := typeName(def)
+            var tname string
+            switch def.(type) {
+            case ChoicesDef, AppenderDef, FuncDef:
+                tname = "STRING"
+            default:
+                tname = typeName(def)
+            }
 			helplines = append(helplines, fmt.Sprintf("  --%s %s", name, tname))
 			if sflag, err := p.runeFromLong(name); err == nil {
 				helplines = append(helplines, fmt.Sprintf("  -%c %s", sflag, tname))
@@ -60,6 +66,10 @@ func (p *Parser) SPrintHelp() string {
 			helplines = append(helplines, fmt.Sprintf("    default: %v", def.(DurationDef).defval))
 		case CountDef:
 			helplines = append(helplines, fmt.Sprintf("    (each appearance is counted)"))
+		case AppenderDef:
+			helplines = append(helplines, fmt.Sprintf("    (can be specified multiple times)"))
+        case FuncDef:
+            // do nothing. the user help will explain all.
 		default:
 			panic(fmt.Sprintf("Internal error: Uncatered type '%t'", def))
 		}

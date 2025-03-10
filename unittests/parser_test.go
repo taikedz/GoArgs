@@ -56,10 +56,10 @@ func Test_ParseArgs_Shortflags(t *testing.T) {
 	parser.SetShortFlag('a', "admit")
 
 	var queue []string
-	parser.Func("queue", "help", func(s string) error {
+	parser.Func("queue", func(s string) error {
 		queue = append(queue, s)
 		return nil
-	})
+	}, "help")
 	parser.SetShortFlag('Q', "queue")
 
 	name := parser.String("name", "who", "help")
@@ -140,6 +140,20 @@ func Test_ParseArgs_Fail(t *testing.T) {
 	parser.ClearParsedData()
 }
 
+
+func Test_Appender(t *testing.T) {
+    parser := goargs.NewParser("")
+
+    values := parser.Appender("file", "File name")
+    parser.SetShortFlag('f', "file")
+
+    if err := parser.Parse([]string{"--file", "one", "-f", "two"}, false); err != nil {
+        t.Errorf("Error parsing appender: %v", err)
+    } else {
+        CheckEqualArr(t, *values, []string{"one", "two"})
+    }
+}
+
 func Test_ParseArgs_Unknowns(t *testing.T) {
     tokens := []string{"a", "--unknown", "", "b", "-x", "c"}
     parser := goargs.NewParser("")
@@ -151,7 +165,7 @@ func Test_ParseArgs_Unknowns(t *testing.T) {
     parser.ClearParsedData()
 
     if err := parser.Parse(tokens, true); err != nil {
-        t.Errorf("Failed to correctly parse unknown tokens: %s", err)
+        t.Errorf("Failed to correctly parse unknown tokens: %v", err)
     } else {
         CheckEqualArr(t, tokens, parser.Args())
     }
