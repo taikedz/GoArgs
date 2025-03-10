@@ -38,7 +38,7 @@ Improved features:
 * Parser operates on any developer-specified `[]string` of tokens (not just `os.Args`)
 * Parser recognises `--` as end of direct arguments, and stores subsequent "raw" passdown tokens
 * Parser can opt to ignore unknown flags, or return error on unknown arguments, as-needed.
-* Unpacking methods `Unpack()` and `UnpackExactly()` help extract and assign positional arguments
+* Unpacking methods `Unpack()` and `UnpackExactly()` help extract and parse positional arguments (supported var types: `*string`, `*int`, `*float`)
 * Long-name flags are specified only with double-hyphen notation
 * Short flags notation (`Parser.SetShortFlag("v", "verbose")`)
     * Short flags can be combined with single-hyphen notation (e.g. `-eux` for `-e -u -x`, or `-vv` for `-v -v` or `--verbose --verbose`)
@@ -126,7 +126,7 @@ Why use this `taikedz/GoArgs` ? If your needs are minimal and/or you literally n
 
 Elsewise, please treat it as a learning tool for its easy-to-read implementation. This package did begin as a learning project, started whilst on an airplane.
 
-More-established packages exist that also offer partial drop-in capability, as well as support for short options, and `--` terminated arguments sequences:
+More-established packages exist that also offer partial drop-in capability, as well as support for combined short options, and the `--` arguments sequence separator:
 
 * Two which I am aware of:
     * <https://pkg.go.dev/github.com/spf13/pflag>
