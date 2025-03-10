@@ -121,7 +121,7 @@ func (p *Parser) Parse(args []string, ignore_unknown bool) error {
                 return fmt.Errorf("Unknown flag %s", token)
             }
 
-        } else if token[:1] == "-" && len(token) > 1 {
+        } else if len(token) > 1 && token[:1] == "-" {
             for _, sflag := range token[1:] {
                 def, found_sflag := p.shortnames[sflag]
                 if !found_sflag && !ignore_unknown {

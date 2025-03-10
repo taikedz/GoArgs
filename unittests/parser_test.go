@@ -141,7 +141,7 @@ func Test_ParseArgs_Fail(t *testing.T) {
 }
 
 func Test_ParseArgs_Unknowns(t *testing.T) {
-    tokens := []string{"a", "--unknown", "b", "-x", "c"}
+    tokens := []string{"a", "--unknown", "", "b", "-x", "c"}
     parser := goargs.NewParser("")
 
     if err := parser.Parse(tokens, false); err == nil {
