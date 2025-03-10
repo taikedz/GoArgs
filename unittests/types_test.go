@@ -50,7 +50,7 @@ func Test_BasicTypes(t *testing.T) {
 		"--abool",
 		"--aduration", "5s",
 	}
-	if err := p.Parse(args, false); err != nil {
+	if err := p.Parse(args); err != nil {
 		t.Errorf("Types parse fail: %v", err)
 		return
 	}

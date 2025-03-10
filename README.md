@@ -1,7 +1,12 @@
 # GoArgs - a simple and flexible Go arguments parser
 
-Go's default `flag` library feels rudimentary; GoArgs aims to provide a simple yet more flexible module for parsing arguments.
-The usage style matches the standard `flag` library for limited compatibility.
+Go's default `flag` library feels limited as a basic library:
+
+* flags must come before positional arguments
+* no support for `--` "raw" passdown tokens after main CLI arguments
+* no support for short flags and aggregated short flags (`-x -y -z` as `-xyz`)
+
+GoArgs aims to provide a simple yet more flexible module for parsing arguments.
 
 The codebase aims to remain small, ensuring it is easy to audit as an external dependency. It is not as fully featured as other implementations out there. See [alternatives](#alternatives) for more options.
 
@@ -22,14 +27,16 @@ Compatibility wtih `flag`:
 Types:
 
 * Basic: String, Int, Int64, Uint, Float, Float64, Bool, time.Duration
-* Counter: incerments a counter every time the flag is seen (such as `-vvv` for incresed levels of verbosity)
-* Choices: predefine a number of possible values for a given flag
+* Additional flag types:
+    * Counter: incerments a counter every time the flag is seen (such as `-vvv` for incresed levels of verbosity)
+    * Choices: predefine a number of possible values for a given flag
+    * Appender: allow using the same flag multiple times (`--mount /this:/right/here --mount /that:/over/there` for two mounts)
 
 Improved features:
 
 * Flags can appear intermixed with positional arguments
-* Parser operates on any developer-specified token list (not just `os.Args`)
-* Parser recognises `--` as end of direct arguments, and stores subsequent raw tokens
+* Parser operates on any developer-specified `[]string` of tokens (not just `os.Args`)
+* Parser recognises `--` as end of direct arguments, and stores subsequent "raw" passdown tokens
 * Parser can opt to ignore unknown flags, or return error on unknown arguments, as-needed.
 * Unpacking methods `Unpack()` and `UnpackExactly()` help extract and assign positional arguments
 * Long-name flags are specified only with double-hyphen notation
@@ -41,7 +48,7 @@ Improved features:
 
 ## Example
 
-A basic example of usage. For further examples, see [goargs_test.go](./goargs_test.go) unit tests file
+A basic example of usage. For further examples, see [unit tests](./unittests/)
 
 ```go
 // Flags can appear before, after, or in between positionals
@@ -70,7 +77,7 @@ func main() {
 
         // Use the parser to detect any/unexpected flags
         // And automatically produce help text if "--help" is in the args
-        if err := send_p.Parse(moreargs, false); err != nil {
+        if err := send_p.Parse(moreargs); err != nil {
             fmt.Printf("%v\n", err)
             os.Exit(1)
         }
@@ -94,7 +101,7 @@ func main() {
         recv_p.SetShortFlag('d', "decrypt")
 
         // Detect flags, isolate positionals and extras
-        if err := recv_p.Parse(moreargs, false); err != nil {
+        if err := recv_p.Parse(moreargs); err != nil {
             fmt.Printf("%v\n", err)
             os.Exit(1)
         }

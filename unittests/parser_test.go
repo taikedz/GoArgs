@@ -15,7 +15,8 @@ func Test_ParseArgs_MakeVar(t *testing.T) {
 	admit := parser.Bool("admit", false, "Whether to admit")
 
 	args := []string{"one", "--name", "Alex", "two", "--age", "20", "--height", "1.8", "--admit", "--unknown", "--", "alpha", "beta"}
-	if err := parser.Parse(args, true); err != nil {
+    parser.RequireFlagDefs(false)
+	if err := parser.Parse(args); err != nil {
 		t.Errorf("Failed parse: %v", err)
 		return
 	}
@@ -34,7 +35,7 @@ func Test_ParseArgs_Specials(t *testing.T) {
 	choice := parser.Choices("occupation", []string{"studying", "employed", "free", "Current occupation"}, "job")
 
 	args := []string{"--occupation", "employed", "--verbose", "-v", "--verbose", "--", "alpha", "beta"}
-	if err := parser.Parse(args, false); err != nil {
+	if err := parser.Parse(args); err != nil {
 		t.Errorf("Failed parse: %v", err)
 		return
 	}
@@ -42,7 +43,7 @@ func Test_ParseArgs_Specials(t *testing.T) {
 	CheckEqual(t, 3, *verbose_lvl)
 	CheckEqual(t, "employed", *choice)
 
-	if err := parser.Parse([]string{"--occupation", "unknown"}, false); err == nil {
+	if err := parser.Parse([]string{"--occupation", "unknown"}); err == nil {
 		t.Errorf("'occupation unknown' Should have failed, but var assigned: '%s'", *choice)
 	}
 }
@@ -69,7 +70,7 @@ func Test_ParseArgs_Shortflags(t *testing.T) {
 	CheckEqual(t, false, *admit)
 	CheckEqual(t, "who", *name)
 
-	if err := parser.Parse([]string{"-Q", "one", "-vav", "-N", "Rae", "--queue", "two"}, false); err != nil {
+	if err := parser.Parse([]string{"-Q", "one", "-vav", "-N", "Rae", "--queue", "two"}); err != nil {
 		t.Errorf("Failed shortflags parse: %v", err)
 	}
 	CheckEqual(t, 2, *verbose)
@@ -77,7 +78,7 @@ func Test_ParseArgs_Shortflags(t *testing.T) {
 	CheckEqual(t, "Rae", *name)
 	CheckEqualArr(t, queue, []string{"one", "two"})
 
-	if err := parser.Parse([]string{"-vavN", "Roo"}, false); err == nil {
+	if err := parser.Parse([]string{"-vavN", "Roo"}); err == nil {
 		t.Errorf("Shortflags parse with combined vavN should have failed, value of name is '%s'", *name)
 	}
 	CheckEqual(t, 4, *verbose)
@@ -103,7 +104,8 @@ func Test_ParseArgs_Good(t *testing.T) {
 	parser.BoolVar(&admit, "admit", false, "Whether to admit")
 
 	args := []string{"one", "--name", "Alex", "two", "--age", "20", "--height", "1.8", "--admit", "--unknown", "--", "alpha", "beta"}
-	if err := parser.Parse(args, true); err != nil {
+    parser.RequireFlagDefs(false)
+	if err := parser.Parse(args); err != nil {
 		t.Errorf("Failed parse: %v", err)
 		return
 	}
@@ -124,17 +126,17 @@ func Test_ParseArgs_Fail(t *testing.T) {
 	parser.StringVar(&value, "val", "nothing", "Some value")
 	parser.IntVar(&number, "num", -1, "Some numeral")
 
-	if err := parser.Parse([]string{"front", "--val"}, false); err == nil {
+	if err := parser.Parse([]string{"front", "--val"}); err == nil {
 		t.Errorf("Should have failed for --val ! Got instead: %s", value)
 	}
 	parser.ClearParsedData()
 	
-	if err := parser.Parse([]string{"--num", "NaN"}, false); err == nil {
+	if err := parser.Parse([]string{"--num", "NaN"}); err == nil {
 		t.Errorf("Should have failed for --num ! Got instead: %d", number)
 	}
 	parser.ClearParsedData()
 	
-	if err := parser.Parse([]string{"--unknown", "what"}, false); err == nil {
+	if err := parser.Parse([]string{"--unknown", "what"}); err == nil {
 		t.Errorf("Should have failed for --unknown ! Parser content is: %v", parser)
 	}
 	parser.ClearParsedData()
@@ -147,7 +149,7 @@ func Test_Appender(t *testing.T) {
     values := parser.Appender("file", "File name")
     parser.SetShortFlag('f', "file")
 
-    if err := parser.Parse([]string{"--file", "one", "-f", "two"}, false); err != nil {
+    if err := parser.Parse([]string{"--file", "one", "-f", "two"}); err != nil {
         t.Errorf("Error parsing appender: %v", err)
     } else {
         CheckEqualArr(t, *values, []string{"one", "two"})
@@ -158,13 +160,14 @@ func Test_ParseArgs_Unknowns(t *testing.T) {
     tokens := []string{"a", "--unknown", "", "b", "-x", "c"}
     parser := goargs.NewParser("")
 
-    if err := parser.Parse(tokens, false); err == nil {
+    if err := parser.Parse(tokens); err == nil {
         t.Errorf("Should have failed parsing tokens")
     }
 
     parser.ClearParsedData()
 
-    if err := parser.Parse(tokens, true); err != nil {
+    parser.RequireFlagDefs(false)
+    if err := parser.Parse(tokens); err != nil {
         t.Errorf("Failed to correctly parse unknown tokens: %v", err)
     } else {
         CheckEqualArr(t, tokens, parser.Args())

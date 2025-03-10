@@ -25,6 +25,7 @@ type Parser struct {
     shortnames map[rune]VarDef
     longnames []string
     helptext string
+    require_flagdefs bool
     // Non-flag tokens in the arguments
     positionals []string
     // All tokens found after the first instance of `--`
@@ -36,7 +37,12 @@ func NewParser(helptext string) Parser {
     p.definitions = make(map[string]VarDef)
     p.shortnames = make(map[rune]VarDef)
     p.helptext = helptext
+    p.require_flagdefs = true
     return p
+}
+
+func (p *Parser) RequireFlagDefs(require bool) {
+    p.require_flagdefs = require
 }
 
 func (p *Parser) enqueueName(name string) {
@@ -90,18 +96,21 @@ func (p *Parser) ClearParsedData() {
 /*
 Parse custom token sequence.
 
-* If ignore_unknown is false, returns an error for unrecognised flags
-* If ignore_unknown is true, retains unrecognised flags in the positional arguments set
+* If flag definitions are required (default), returns an error for unrecognised flags
+* Else, retains unrecognised flags in the positional arguments set
+* See `RequireFlagDefs(bool)`
 
 If "-h" or "--help" is found before the first "--", then help is printed and process exits.
 
 Panics if a flag is defined twice on the same name, or if the flag has a bad name.
 Acceptable flag names must be at least two characters long, and start with an ASCII-7 alphabetical character.
 */
-func (p *Parser) Parse(args []string, ignore_unknown bool) error {
+func (p *Parser) Parse(args []string) error {
     p.autoHelp(args)
     args, passdowns := SplitTokensBefore("--", args)
     p.PassdownArgs = passdowns
+
+    // CONFESSION : I don't like that this function is so convoluted.
 
     for i := 0; i<len(args); i++ {
         token := args[i]
@@ -117,14 +126,14 @@ func (p *Parser) Parse(args []string, ignore_unknown bool) error {
             }
             def_ifc = p.definitions[longname]
 
-            if def_ifc == nil && !ignore_unknown {
+            if def_ifc == nil && p.require_flagdefs {
                 return fmt.Errorf("Unknown flag %s", token)
             }
 
         } else if len(token) > 1 && token[:1] == "-" {
             for _, sflag := range token[1:] {
                 def, found_sflag := p.shortnames[sflag]
-                if !found_sflag && !ignore_unknown {
+                if !found_sflag && p.require_flagdefs {
                     return fmt.Errorf("Unknown short flag '%c'", sflag)
                 } else if !found_sflag {
                     break
@@ -180,8 +189,8 @@ func (p *Parser) Parse(args []string, ignore_unknown bool) error {
 
 See Parse() for further behaviours.
 */
-func (p *Parser) ParseCliArgs(ignore_unknown bool) error {
-    return p.Parse(os.Args[1:], ignore_unknown)
+func (p *Parser) ParseCliArgs() error {
+    return p.Parse(os.Args[1:])
 }
 
 func (p *Parser) autoHelp(args []string) {
