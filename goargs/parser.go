@@ -55,20 +55,18 @@ func (p *Parser) enqueueName(name string) {
     p.longnames = append(p.longnames, name)
 }
 
-func (p *Parser) SetShortFlag(short rune, longname string) error {
+func (p *Parser) SetShortFlag(short rune, longname string) {
     if ! strings.ContainsRune(_VALID_SFLAGS, short) {
         panic(fmt.Sprintf("Internal error: cannot use rune %c", short))
     }
     if gotname, ok := p.shortnames[short]; ok {
-        return fmt.Errorf("'-%c' already defined against '%s'", short, gotname)
+        panic(fmt.Sprintf("'-%c' already defined against '%s'", short, gotname))
     }
     def, ok := p.definitions[longname]
     if !ok {
-        return fmt.Errorf("Flag '--%s' not yet defined", longname)
+        panic(fmt.Sprintf("Flag '--%s' not yet defined", longname))
     }
     p.shortnames[short] = def
-
-    return nil
 }
 
 // Args returns the positional tokens from the parsed arguments

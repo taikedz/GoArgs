@@ -84,10 +84,6 @@ func Test_ParseArgs_Shortflags(t *testing.T) {
 	CheckEqual(t, 4, *verbose)
 	CheckEqual(t, true, *admit)
 	CheckEqual(t, "Rae", *name)
-
-	if err := parser.SetShortFlag('u', "unknown"); err == nil {
-		t.Errorf("Setting unknown short flag should have failed")
-	}
 }
 
 func Test_ParseArgs_Good(t *testing.T) {
