@@ -99,9 +99,6 @@ Parse custom token sequence.
 * See `RequireFlagDefs(bool)`
 
 If "-h" or "--help" is found before the first "--", then help is printed and process exits.
-
-Panics if a flag is defined twice on the same name, or if the flag has a bad name.
-Acceptable flag names must be at least two characters long, and start with an ASCII-7 alphabetical character.
 */
 func (p *Parser) Parse(args []string) error {
     p.autoHelp(args)
