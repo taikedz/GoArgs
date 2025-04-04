@@ -1,56 +1,51 @@
 # Development notes for this branch
 
-Rename package to `goptions` - option resolution for Go
-
-Provide an options resolution mechanism:
+Rename to `tk-opts` and place arg parsing and options loading in separate submodules.
 
 ```go
-// New parser
-parser := goptions.NewParser("People")
+import (
+    "github.com/taikedz/tk-opts/tkargs"
+    "github.com/taikedz/tk-opts/tkconf"
+)
 
-// A flag
-name := parser.String("name", "unknown", "Their name")
+file_sources := []string{
+    "%/config/myapp.json", // "%" is "path to current binary
+    "/etc/myapp/myapp.json",
+    "~/.config/myapp/myapp.json",
+    "./myapp.json",
+//    "other-myapp.json" // INAVLID - needs a path type (includes "/" like in "%/", "/", "~/", "./")
+}
+config := tkconf.NewJsonLoader(file_sources)
+// or goconfig.NewEnvParser(file_sources)
+// or goconfig.NewIniParser(file_sources)
+// or goconfig.NewYamlParser(file_sources) // optional, since Yaml is likely an external dependency again
 
-/* How to map the Json fields to options
+// A variable to populate - we will use its reference
+var name string
+
+/* How to extract a Json field
  * Example data:
  *     {"person": {"name":"Alix"} }
- * Name is from flag name to Json path
+ * providing a hard-coded default
  */
-config_map := map[string]string := {"name": "person/name"}
+name_p := config.String("/person/name", "Jason", "MYAPP_USERNAME") // includes an environment variable override. Use "" for none?
+//config.StringVar(&name, "/person/name", "Jason", "MYAPP_USERNAME") // auto-create var pointer
 
-// Config files: resolved from earliest to latest
-//   NewJsonConfig(config_map map[string]string) allows mapping
-//   config paths to flag names
-config := goptions.NewJsonConfig(config_map)
+// For env, just a key: config.String("name", "Jason", "MYAPP_USERNAME")
+// For ini, section and key: config.String("User:name", "Jason", "MYAPP_USERNAME")
+// For ini, default section and key: config.String(":name", "Jason", "MYAPP_USERNAME")
 
-// Use NewEnvConfig() for key-value pairs that populate values if not specified on CLI
+config.Parse() // actively loads file data, and sets values/defaults
+// _After_ which, we can get the CLI options and override as needed
 
-// Add a series of locations in which to find config files
-config.AddFileSources("config.json", []string{
-    "%/defaultConfig", // path relative to the current binary ("%/" notation)
-    "/etc/myapp", //  a global config
-    "~/.local/etc/myapp" // a user home config ("~/" notation)
-})
-
-// Add a single config - resolves after all the above
-config.AddFile("./myapp-config.json") // simply "this" is implicitly "./this"
-
-parser.AddConfig(config)
-
-// Add an environment variable that resolves if flag is not specified on CLI
-// Overrides file specs
-parser.AddEnv("MYAPP_USERNAME", "name")
-
-parser.Parse()
-
-age := parser.Config().getInt("age") // get arbitrary values from config
+parser := tkargs.NewParser("People")
+config.StringVar(&name, "name", name, "Name of user")
+//config.StringVar(name_p, "name", name, "Name of user") // re-use auto-created var pointer
 ```
 
-Order of resolution is:
+Order of resolution of `tkconf` is:
 
-* files, in declaration order
-* environment variables
-* CLI flags
+* files, in declaration order, later overriding previous
+* environment variables, overriding files
 
 This allows the package to take care of options configurations.
-
