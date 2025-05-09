@@ -9,7 +9,7 @@ import (
 )
 
 file_sources := []string{
-    "%/config/myapp.json", // "%" is "path to current binary
+    "%/config/myapp.json", // "%" is "path to current binary"
     "/etc/myapp/myapp.json",
     "~/.config/myapp/myapp.json",
     "./myapp.json",
