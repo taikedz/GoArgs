@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 	"github.com/taikedz/goargs/goargs"
+	"github.com/taikedz/gocheck"
 )
 
 
@@ -24,18 +25,18 @@ func Test_BasicTypes(t *testing.T) {
 	dr, _ := time.ParseDuration("20s")
 	my_duration  := p.Duration("aduration", dr, "help")
 
-	CheckEqual(t, "stringy", *my_string)
+	gocheck.Equal(t, "stringy", *my_string)
 
-	CheckEqual(t, 1, *my_int)
-	CheckEqual(t, 1, *my_int64)
-	CheckEqual(t, 1, *my_uint)
+	gocheck.Equal(t, 1, *my_int)
+	gocheck.Equal(t, 1, *my_int64)
+	gocheck.Equal(t, 1, *my_uint)
 
-	CheckEqual(t, 1.1, *my_float)
-	CheckEqual(t, 1.1, *my_float64)
+	gocheck.Equal(t, 1.1, *my_float)
+	gocheck.Equal(t, 1.1, *my_float64)
 
-	CheckEqual(t, true, *my_bool)
+	gocheck.Equal(t, true, *my_bool)
 
-	CheckEqual(t, dr, *my_duration)
+	gocheck.Equal(t, dr, *my_duration)
 
 	args := []string {
 		"--astring", "strung",
@@ -55,18 +56,18 @@ func Test_BasicTypes(t *testing.T) {
 		return
 	}
 
-	CheckEqual(t, "strung", *my_string)
+	gocheck.Equal(t, "strung", *my_string)
 
-	CheckEqual(t, -2, *my_int)
-	CheckEqual(t, 10_000, *my_int64)
-	CheckEqual(t, 5, *my_uint)
+	gocheck.Equal(t, -2, *my_int)
+	gocheck.Equal(t, 10_000, *my_int64)
+	gocheck.Equal(t, 5, *my_uint)
 
-	CheckEqual(t, 6.7, *my_float)
-	CheckEqual(t, 8008.9009, *my_float64)
+	gocheck.Equal(t, 6.7, *my_float)
+	gocheck.Equal(t, 8008.9009, *my_float64)
 
-	CheckEqual(t, false, *my_bool)
+	gocheck.Equal(t, false, *my_bool)
 
 	dr5, _ := time.ParseDuration("5s")
-	CheckEqual(t, dr5, *my_duration)
+	gocheck.Equal(t, dr5, *my_duration)
 
 }

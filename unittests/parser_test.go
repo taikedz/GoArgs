@@ -3,6 +3,7 @@ package goargsunittest
 import (
 	"testing"
 	"github.com/taikedz/goargs/goargs"
+	"github.com/taikedz/gocheck"
 )
 
 
@@ -21,10 +22,10 @@ func Test_ParseArgs_MakeVar(t *testing.T) {
 		return
 	}
 
-	CheckEqual(t, "Alex", *name)
-	CheckEqual(t, 20,     *age)
-	CheckEqual(t, 1.8,    *height)
-	CheckEqual(t, true,   *admit)
+	gocheck.Equal(t, "Alex", *name)
+	gocheck.Equal(t, 20,     *age)
+	gocheck.Equal(t, 1.8,    *height)
+	gocheck.Equal(t, true,   *admit)
 }
 
 func Test_ParseArgs_Specials(t *testing.T) {
@@ -40,8 +41,8 @@ func Test_ParseArgs_Specials(t *testing.T) {
 		return
 	}
 
-	CheckEqual(t, 3, *verbose_lvl)
-	CheckEqual(t, "employed", *choice)
+	gocheck.Equal(t, 3, *verbose_lvl)
+	gocheck.Equal(t, "employed", *choice)
 
 	if err := parser.Parse([]string{"--occupation", "unknown"}); err == nil {
 		t.Errorf("'occupation unknown' Should have failed, but var assigned: '%s'", *choice)
@@ -66,24 +67,24 @@ func Test_ParseArgs_Shortflags(t *testing.T) {
 	name := parser.String("name", "who", "help")
 	parser.SetShortFlag('N', "name")
 
-	CheckEqual(t, 0, *verbose)
-	CheckEqual(t, false, *admit)
-	CheckEqual(t, "who", *name)
+	gocheck.Equal(t, 0, *verbose)
+	gocheck.Equal(t, false, *admit)
+	gocheck.Equal(t, "who", *name)
 
 	if err := parser.Parse([]string{"-Q", "one", "-vav", "-N", "Rae", "--queue", "two"}); err != nil {
 		t.Errorf("Failed shortflags parse: %v", err)
 	}
-	CheckEqual(t, 2, *verbose)
-	CheckEqual(t, true, *admit)
-	CheckEqual(t, "Rae", *name)
-	CheckEqualArr(t, queue, []string{"one", "two"})
+	gocheck.Equal(t, 2, *verbose)
+	gocheck.Equal(t, true, *admit)
+	gocheck.Equal(t, "Rae", *name)
+	gocheck.EqualArr(t, queue, []string{"one", "two"})
 
 	if err := parser.Parse([]string{"-vavN", "Roo"}); err == nil {
 		t.Errorf("Shortflags parse with combined vavN should have failed, value of name is '%s'", *name)
 	}
-	CheckEqual(t, 4, *verbose)
-	CheckEqual(t, true, *admit)
-	CheckEqual(t, "Rae", *name)
+	gocheck.Equal(t, 4, *verbose)
+	gocheck.Equal(t, true, *admit)
+	gocheck.Equal(t, "Rae", *name)
 }
 
 func Test_ParseArgs_Good(t *testing.T) {
@@ -106,13 +107,13 @@ func Test_ParseArgs_Good(t *testing.T) {
 		return
 	}
 
-	CheckEqual(t, "Alex", name)
-	CheckEqual(t, 20,     age)
-	CheckEqual(t, 1.8,    height)
-	CheckEqual(t, true,   admit)
+	gocheck.Equal(t, "Alex", name)
+	gocheck.Equal(t, 20,     age)
+	gocheck.Equal(t, 1.8,    height)
+	gocheck.Equal(t, true,   admit)
 
-	CheckEqualArr(t, []string{"one", "two", "--unknown"}, parser.Args())
-	CheckEqualArr(t, []string{"alpha", "beta"},           parser.PassdownArgs)
+	gocheck.EqualArr(t, []string{"one", "two", "--unknown"}, parser.Args())
+	gocheck.EqualArr(t, []string{"alpha", "beta"},           parser.PassdownArgs)
 }
 
 func Test_ParseArgs_Fail(t *testing.T) {
@@ -148,7 +149,7 @@ func Test_Appender(t *testing.T) {
     if err := parser.Parse([]string{"--file", "one", "-f", "two"}); err != nil {
         t.Errorf("Error parsing appender: %v", err)
     } else {
-        CheckEqualArr(t, *values, []string{"one", "two"})
+        gocheck.EqualArr(t, *values, []string{"one", "two"})
     }
 }
 
@@ -166,6 +167,6 @@ func Test_ParseArgs_Unknowns(t *testing.T) {
     if err := parser.Parse(tokens); err != nil {
         t.Errorf("Failed to correctly parse unknown tokens: %v", err)
     } else {
-        CheckEqualArr(t, tokens, parser.Args())
+        gocheck.EqualArr(t, tokens, parser.Args())
     }
 }

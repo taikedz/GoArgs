@@ -4,6 +4,7 @@ import (
 	"testing"
     "strings"
 	"github.com/taikedz/goargs/goargs"
+	"github.com/taikedz/gocheck"
 )
 
 
@@ -77,8 +78,8 @@ func Test_helpst_special(t *testing.T) {
 }
 
 func Test_findhelp(t *testing.T) {
-	CheckEqual(t, 1, goargs.FindHelpFlag([]string{"a", "-h", "--help"}))
-	CheckEqual(t, 0, goargs.FindHelpFlag([]string{"-h", "next", "--help"}))
-	CheckEqual(t, 2, goargs.FindHelpFlag([]string{"-he", "next", "--help"}))
-	CheckEqual(t, -1, goargs.FindHelpFlag([]string{"a", "--", "-h", "--help"}))
+	gocheck.Equal(t, 1, goargs.FindHelpFlag([]string{"a", "-h", "--help"}))
+	gocheck.Equal(t, 0, goargs.FindHelpFlag([]string{"-h", "next", "--help"}))
+	gocheck.Equal(t, 2, goargs.FindHelpFlag([]string{"-he", "next", "--help"}))
+	gocheck.Equal(t, -1, goargs.FindHelpFlag([]string{"a", "--", "-h", "--help"}))
 }

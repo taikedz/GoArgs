@@ -3,6 +3,7 @@ package goargsunittest
 import (
 	"testing"
 	"github.com/taikedz/goargs/goargs"
+	"github.com/taikedz/gocheck"
 )
 
 func Test_tokenize(t *testing.T) {
@@ -10,14 +11,14 @@ func Test_tokenize(t *testing.T) {
     var aft []string
 
     fore, aft = goargs.SplitTokensBefore("--", []string{"a", "b c", "--", "d", "e f"})
-    CheckEqualArr(t, []string{"a", "b c"}, fore)
-    CheckEqualArr(t, []string{"d", "e f"}, aft)
+    gocheck.EqualArr(t, []string{"a", "b c"}, fore)
+    gocheck.EqualArr(t, []string{"d", "e f"}, aft)
 
     fore, aft = goargs.SplitTokensBefore("--", []string{"--", "a" , "--", "e f"})
-    CheckEqualArr(t, []string{}, fore)
-    CheckEqualArr(t, []string{"a", "--", "e f"}, aft)
+    gocheck.EqualArr(t, []string{}, fore)
+    gocheck.EqualArr(t, []string{"a", "--", "e f"}, aft)
 
     fore, aft = goargs.SplitTokensBefore("--", []string{"n", "p x", "--"})
-    CheckEqualArr(t, []string{"n", "p x"}, fore)
-    CheckEqualArr(t, []string{}, aft)
+    gocheck.EqualArr(t, []string{"n", "p x"}, fore)
+    gocheck.EqualArr(t, []string{}, aft)
 }
