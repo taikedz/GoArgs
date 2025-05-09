@@ -1,11 +1,11 @@
 # Development notes for this branch
 
-Rename to `tk-opts` and place arg parsing and options loading in separate submodules.
+Rename to `paramgo` and place arg parsing and options loading in separate submodules.
 
 ```go
 import (
-    "github.com/taikedz/tk-opts/tkargs"
-    "github.com/taikedz/tk-opts/tkconf"
+    "github.com/taikedz/paramgo/pgargs"
+    "github.com/taikedz/paramgo/pgconf"
 )
 
 file_sources := []string{
@@ -15,7 +15,7 @@ file_sources := []string{
     "./myapp.json",
 //    "other-myapp.json" // INAVLID - needs a path type (includes "/" like in "%/", "/", "~/", "./")
 }
-config := tkconf.NewJsonLoader(file_sources)
+config := pgconf.NewJsonLoader(file_sources)
 // or goconfig.NewEnvParser(file_sources)
 // or goconfig.NewIniParser(file_sources)
 // or goconfig.NewYamlParser(file_sources) // optional, since Yaml is likely an external dependency again
@@ -39,11 +39,10 @@ config.Parse() // actively loads file data, and sets values/defaults
 // _After_ which, we can get the CLI options and override as needed
 
 parser := tkargs.NewParser("People")
-config.StringVar(&name, "name", name, "Name of user")
-//config.StringVar(name_p, "name", name, "Name of user") // re-use auto-created var pointer
+config.StringVar(&name, "name", *name_p, "Name of user") // Use pgconf data to populate the var
 ```
 
-Order of resolution of `tkconf` is:
+Order of resolution of `pgconf` is:
 
 * files, in declaration order, later overriding previous
 * environment variables, overriding files
