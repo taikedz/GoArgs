@@ -43,6 +43,20 @@ func Unpack(tokens []string, vars ...interface{}) ([]string, error) {
                 }
                 var lab *float32 = label.(*float32)
                 *lab = float32(float)
+            case *bool:
+                var lab *bool = label.(*bool)
+                switch tok {
+                case "false":
+                    *lab = false
+                case "0":
+                    *lab = false
+                case "true":
+                    *lab = true
+                case "1":
+                    *lab = true
+                default:
+                    return nil, fmt.Errorf("Invalid string value for boolean: %v . Try 'true', 'false, '1', or '0'.", tok)
+                }
         }
     }
 

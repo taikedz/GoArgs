@@ -38,7 +38,7 @@ Improved features:
 * Parser operates on any developer-specified `[]string` of tokens (not just `os.Args`)
 * Parser recognises `--` as end of direct arguments, and stores subsequent "raw" passdown tokens
 * Parser can opt to ignore unknown flags, or return error on unknown arguments, as-needed.
-* Unpacking methods `Unpack()` and `UnpackExactly()` help extract and parse positional arguments (supported var types: `*string`, `*int`, `*float`)
+* Unpacking methods `Unpack()` and `UnpackExactly()` help extract and parse positional arguments (supported var types: `*string`, `*int`, `*float`, `*bool`)
 * Long-name flags are specified only with double-hyphen notation
 * Short flags notation (`Parser.SetShortFlag("v", "verbose")`)
     * Short flags can be combined with single-hyphen notation (e.g. `-eux` for `-e -u -x`, or `-vv` for `-v -v` or `--verbose --verbose`)
@@ -48,83 +48,59 @@ Improved features:
 
 ## Examples
 
-A basic example of usage. For further examples, see [unit tests](./unittests/)
+A simple example of some of the basic notations.
 
 ```go
-package main
+// Declare a parser with help
+parser := goargs.NewParser("cmd ARG1 ARG2 --opt OPTVAL --num N ...")
 
-import (
-    "os"
-    "fmt"
-    "strings"
+// Use a reference variable from the parser
+opt := parser.String("opt", "hello", "A simple word")
+// Set a short flag for the option by name
+parser.SetShortFlag('o', "opt")
 
-    "github.com/taikedz/goargs/goargs"
-)
+// Create your own variable and pass it in
+var count int
+parser.Intvar(&count, "num", 0, "A number")
+parser.SetShortFlag('n', "num")
 
-const WAVE_MOJI string = "👋"
+parser.ParseCliArgs() // parse the os.Args[...] values
 
-func main() {
-    // Declare a new parser, and its basic help string
-    parser := goargs.NewParser("salute NAME [--wave N] [--grouped] [--with SALUTATION]")
+// ... or parse values from an array/slice:
+/*
+tokens := []string{"one", "two", "-n", "5"}
+parser.Parse(tokens)
+*/
 
-    // Declare a string flag "--with", its default value "Hello", and its help string
-    // The returned value is a pointer to a memory location of type string
-    salutation := parser.String("with", "Hello", "Salutation to use")
-    parser.SetShortFlag('w', "with")
-
-    // Again with an int flag
-    wave_count := parser.Int("wave", 0, fmt.Sprintf("Add N hand wave emojis (%s)", WAVE_MOJI) )
-    parser.SetShortFlag('W', "wave")
-
-    // Again with a bool flag
-    grouped := parser.Bool("grouped", false, "Group names to a single salutation")
-    parser.SetShortFlag('g', "grouped")
-
-    // Perform the parse. If `--help` is found amongst the flags, prints the help and exits
-    if err := parser.ParseCliArgs(); err != nil {
-        fmt.Printf("! -> %v\n", err)
-        os.Exit(1)
-    }
-
-    // The variable is a pointed, remember to dereference!
-    mojis := wave(*wave_count)
-
-    if *grouped {
-        names := parser.Args()
-        lead_names := strings.Join(names[:len(names)-1], ", ")
-        last_name := names[len(names)-1]
-
-        fmt.Printf("%s %s and %s %s\n", *salutation, lead_names, last_name, mojis)
-    } else {
-        for _, name := range(parser.Args()) {
-            fmt.Printf("%s, %s %s\n", *salutation, name, mojis)
-        }
-    }
-}
-
-func wave(times int) string {
-    var hands []string
-
-    for i:=0; i<times; i++ {
-        hands = append(hands, WAVE_MOJI)
-    }
-
-    return strings.Join(hands, "")
-}
+fmt.Printf("%v, %v -> %v", count, *opt, parser.Args())
 ```
+
+Some runnable example files are linked below. For further examples, see [unit tests](./unittests/)
+
+[salute.go](examples/salute.go)
 
 Usage:
 
 ```sh
-go run salute.go Alex Sam -W 2 --grouped Jay
+go run examples/salute.go Alex Sam -W 2 --grouped Jay
 
 # Prints:
 # Hello Alex, Sam and Jay 👋👋
 ```
 
+[splat.go](examples/splat.go)
+
+Try running the following:
+
+```sh
+go run examples/splat.go w one.txt two.txt -- "hi and bye" "this and that"
+go run examples/splat.go w one.txt --help two.txt -- "hi and bye" "this and that"
+go run examples/splat.go w one.txt two.txt -- "hi and bye" --help "this and that"
+```
+
 ## Alternatives
 
-Why use this `taikedz/GoArgs` ? If your needs are minimal and/or you literally need to copy the files in, then maybe you have a case to use this lib. I have made a point of keeping the feature set relatively straighforward and flexible, and in keeping with the standard library's style. I have also tried to make a point to keep the code itself straightforwad so that you may audit it.
+Why use this `taikedz/GoArgs` ? If your needs are minimal and/or you literally need to copy the files in to your project directly, then maybe you have a case to use this lib. I have made a point of keeping the feature set relatively straighforward and flexible, and in keeping with the standard library's style. I have also tried to make a point to keep the code itself straightforwad so that you may audit it.
 
 Elsewise, please treat it as a learning tool for its easy-to-read implementation. This package did begin as a learning project, started whilst on an airplane.
 

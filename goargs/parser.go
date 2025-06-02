@@ -29,7 +29,7 @@ type Parser struct {
     // Non-flag tokens in the arguments
     positionals []string
     // All tokens found after the first instance of `--`
-    PassdownArgs []string
+    passdown_args []string
 }
 
 func NewParser(helptext string) Parser {
@@ -86,9 +86,13 @@ func (p *Parser) Arg(i int) (string, error) {
     }
 }
 
+func (p *Parser) ExtraArgs() []string {
+    return p.passdown_args[:]
+}
+
 func (p *Parser) ClearParsedData() {
     p.positionals = []string{}
-    p.PassdownArgs = []string{}
+    p.passdown_args = []string{}
 }
 
 /*
@@ -103,7 +107,7 @@ If "-h" or "--help" is found before the first "--", then help is printed and pro
 func (p *Parser) Parse(args []string) error {
     p.autoHelp(args)
     args, passdowns := SplitTokensBefore("--", args)
-    p.PassdownArgs = passdowns
+    p.passdown_args = passdowns
 
     // CONFESSION : I don't like that this function is so convoluted.
 

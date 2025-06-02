@@ -113,7 +113,7 @@ func Test_ParseArgs_Good(t *testing.T) {
 	gocheck.Equal(t, true,   admit)
 
 	gocheck.EqualArr(t, []string{"one", "two", "--unknown"}, parser.Args())
-	gocheck.EqualArr(t, []string{"alpha", "beta"},           parser.PassdownArgs)
+	gocheck.EqualArr(t, []string{"alpha", "beta"},           parser.ExtraArgs())
 }
 
 func Test_ParseArgs_Fail(t *testing.T) {
