@@ -29,9 +29,13 @@ func Test_ParseArgs_MakeVar(t *testing.T) {
 
     var oneval string
     var twoval string
+    var reval string
     parser.UnpackArgs(0, &oneval, &twoval)
+    rem, _ := parser.UnpackArgs(0, &reval)
     gocheck.Equal(t, "one", oneval)
     gocheck.Equal(t, "two", twoval)
+    gocheck.Equal(t, "one", reval)
+    gocheck.EqualArr(t, []string{"two", "--unknown"}, rem)
 }
 
 func Test_ParseArgs_Specials(t *testing.T) {
