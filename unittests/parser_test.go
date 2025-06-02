@@ -180,3 +180,17 @@ func Test_ParseArgs_Unknowns(t *testing.T) {
         gocheck.EqualArr(t, tokens, parser.Args())
     }
 }
+
+func Test_ParseArgs_Multishortflags(t *testing.T) {
+    tokens := []string{"hi", "-ab", "bye"}
+    parser := goargs.NewParser("")
+
+    parser.Bool("alpha", false, "help")
+    parser.Bool("beta" , false, "help")
+    parser.SetShortFlag('a', "alpha")
+    parser.SetShortFlag('b', "beta")
+
+    parser.Parse(tokens)
+
+    gocheck.EqualArr(t, []string{"hi", "bye"}, parser.Args())
+}

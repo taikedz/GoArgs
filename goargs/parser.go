@@ -110,7 +110,7 @@ func (p *Parser) ClearParsedData() {
 Parse custom token sequence.
 
 * If flag definitions are required (default), returns an error for unrecognised flags
-* Else, retains unrecognised flags in the positional arguments set
+* Else, retain_tokens unrecognised flags in the positional arguments set
 * See `RequireFlagDefs(bool)`
 
 If "-h" or "--help" is found before the first "--", then help is printed and process exits.
@@ -126,6 +126,7 @@ func (p *Parser) Parse(args []string) error {
         token := args[i]
         var def_ifc VarDef = nil // Interface types are a bit pointery (can be nil), but cannot ever be indirected with `*`
         var nextVal *string = nil
+        var retain_token = true
 
         if len(token) >= 2 && token[:2] == "--" {
             longname := token[2:]
@@ -141,11 +142,15 @@ func (p *Parser) Parse(args []string) error {
             }
 
         } else if len(token) > 1 && token[:1] == "-" {
+            // Typically do not retain short flag aggregates
+            // However if short flag is not found, retain the lot
+            retain_token = false
             for _, sflag := range token[1:] {
                 def, found_sflag := p.shortnames[sflag]
                 if !found_sflag && p.require_flagdefs {
                     return fmt.Errorf("Unknown short flag '%c'", sflag)
                 } else if !found_sflag {
+                    retain_token = true
                     break
                 }
                 switch def.(type) {
@@ -188,7 +193,9 @@ func (p *Parser) Parse(args []string) error {
             }
 
         } else {
-            p.positionals = append(p.positionals, token)
+            if retain_token {
+                p.positionals = append(p.positionals, token)
+            }
         }
     }
 

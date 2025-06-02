@@ -19,10 +19,6 @@ func main() {
         os.Exit(1)
     }
 
-    // Get the tokens from _before_ the separator, as raw string values
-    // If any flags had been defined, their tokens would be removed in this list
-    mode_and_files := parser.Args()
-
     // Get the tokens from _after_ the separator. All tokens, as raw string values.
     data_lines := parser.ExtraArgs()
 
@@ -30,7 +26,7 @@ func main() {
     // to split off the number of required tokens (1 here), and return the remainder
     // Splitting off also performs type coercion to some basic types (string, int, float, bool)
     var mode string
-    files_list, err := goargs.Unpack(mode_and_files, &mode)
+    files_list, err := parser.UnpackArgs(0, &mode)
     if err != nil {
         fmt.Printf("ERROR: %v", err)
         os.Exit(1)
