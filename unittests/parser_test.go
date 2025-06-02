@@ -26,6 +26,12 @@ func Test_ParseArgs_MakeVar(t *testing.T) {
 	gocheck.Equal(t, 20,     *age)
 	gocheck.Equal(t, 1.8,    *height)
 	gocheck.Equal(t, true,   *admit)
+
+    var oneval string
+    var twoval string
+    parser.UnpackArgs(0, &oneval, &twoval)
+    gocheck.Equal(t, "one", oneval)
+    gocheck.Equal(t, "two", twoval)
 }
 
 func Test_ParseArgs_Specials(t *testing.T) {

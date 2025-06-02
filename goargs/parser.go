@@ -90,6 +90,17 @@ func (p *Parser) ExtraArgs() []string {
     return p.passdown_args[:]
 }
 
+/// Unpack positional arguments starting at index position, into specified pointer locations
+// e.g. `parser.UnpackArgs(0, &name1, &name2)` is like `parser.UnpackArgs(0, &name 1); parser.UnpackArgs(1, &name2)`
+func (p *Parser) UnpackArgs(idx int, ref ... interface{}) error {
+    remains, err := Unpack(p.positionals[idx:], ref...)
+    if err != nil {
+        return err
+    }
+    p.positionals = remains
+    return nil
+}
+
 func (p *Parser) ClearParsedData() {
     p.positionals = []string{}
     p.passdown_args = []string{}
