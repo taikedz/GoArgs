@@ -46,78 +46,80 @@ Improved features:
 * Help flags `--help` and `-h` automatically detected when using `ParseCliArgs()`, except when appearing after the first `--`
 
 
-## Example
+## Examples
 
 A basic example of usage. For further examples, see [unit tests](./unittests/)
 
 ```go
-// Flags can appear before, after, or in between positionals
-
-// Compare example commands:
-//   go run tool.go send ./thing remote.lan
-//   go run tool.go recv remote.lan --decrypt ./stuff -- nc 12.34.56.78 3000 "<" file.txt
 package main
+
 import (
-    "fmt"
     "os"
+    "fmt"
+    "strings"
+
     "github.com/taikedz/goargs/goargs"
 )
 
+const WAVE_MOJI string = "👋"
+
 func main() {
-    var action string
+    // Declare a new parser, and its basic help string
+    parser := goargs.NewParser("salute NAME [--wave N] [--grouped] [--with SALUTATION]")
 
-    // Use `Unpack()` for processing leftmost positional arguments
-    //   and retain the remainder in `moreargs`
-    moreargs := goargs.Unpack(os.Args[1:], &action)
-    
-    if action == "send" {
-        send_p := goargs.NewParser("send FILE SERVER")
-        var file string
-        var server string
+    // Declare a string flag "--with", its default value "Hello", and its help string
+    // The returned value is a pointer to a memory location of type string
+    salutation := parser.String("with", "Hello", "Salutation to use")
+    parser.SetShortFlag('w', "with")
 
-        // Use the parser to detect any/unexpected flags
-        // And automatically produce help text if "--help" is in the args
-        if err := send_p.Parse(moreargs); err != nil {
-            fmt.Printf("%v\n", err)
-            os.Exit(1)
-        }
-        // Unpack the positionals now that eventual flags have been removed
-        // Expect the exact number of tokens to number of variables
-        if err := goargs.UnpackExactly(send_p.Args(), &file, &server); err != nil {
-            fmt.Printf("%v\n", err)
-            os.Exit(2)
-        }
+    // Again with an int flag
+    wave_count := parser.Int("wave", 0, fmt.Sprintf("Add N hand wave emojis (%s)", WAVE_MOJI) )
+    parser.SetShortFlag('W', "wave")
 
-        DoSend(file, server, encrypt) // ...
+    // Again with a bool flag
+    grouped := parser.Bool("grouped", false, "Group names to a single salutation")
+    parser.SetShortFlag('g', "grouped")
 
-    } else if action == "recv" {
-        recv_p := goargs.NewParser("recv [--decrypt] SERVER FILE -- SERVER_COMMAND ...")
-        var file string
-        var server string
+    // Perform the parse. If `--help` is found amongst the flags, prints the help and exits
+    if err := parser.ParseCliArgs(); err != nil {
+        fmt.Printf("! -> %v\n", err)
+        os.Exit(1)
+    }
 
-        // Declare an argument and variable to access result from
-        decrypt := recv_p.Bool("decrypt", false, "Attempt decrypt on incoming data")
-        // Also allow the flag to have a short notation
-        recv_p.SetShortFlag('d', "decrypt")
+    // The variable is a pointed, remember to dereference!
+    mojis := wave(*wave_count)
 
-        // Detect flags, isolate positionals and extras
-        if err := recv_p.Parse(moreargs); err != nil {
-            fmt.Printf("%v\n", err)
-            os.Exit(1)
-        }
-        if count_err := goargs.UnpackExactly(recv_p.Args(), &server, &file); count_err != nil {
-            fmt.Printf("%v\n", error)
-            os.Exit(2)
-        }
+    if *grouped {
+        names := parser.Args()
+        lead_names := strings.Join(names[:len(names)-1], ", ")
+        last_name := names[len(names)-1]
 
-        // The extra args after "--" are passed along directly, raw
-        ServerCommand(recv_p.PassdownArgs)
-        DoSave(file, server, *decrypt) // ...
+        fmt.Printf("%s %s and %s %s\n", *salutation, lead_names, last_name, mojis)
     } else {
-        fmt.Printf("Unknown action: %s", action)
-        os.Exit(10)
+        for _, name := range(parser.Args()) {
+            fmt.Printf("%s, %s %s\n", *salutation, name, mojis)
+        }
     }
 }
+
+func wave(times int) string {
+    var hands []string
+
+    for i:=0; i<times; i++ {
+        hands = append(hands, WAVE_MOJI)
+    }
+
+    return strings.Join(hands, "")
+}
+```
+
+Usage:
+
+```sh
+go run salute.go Alex Sam -W 2 --grouped Jay
+
+# Prints:
+# Hello Alex, Sam and Jay 👋👋
 ```
 
 ## Alternatives
