@@ -25,6 +25,7 @@ type Parser struct {
     shortnames map[rune]VarDef
     longnames []string
     helptext string
+    help_on_empty_args bool
     require_flagdefs bool
     // Non-flag tokens in the arguments
     positionals []string
@@ -39,6 +40,10 @@ func NewParser(helptext string) Parser {
     p.helptext = helptext
     p.require_flagdefs = true
     return p
+}
+
+func (p *Parser) SetHelpOnEmptyArgs(onempty bool) {
+    p.help_on_empty_args = onempty
 }
 
 func (p *Parser) RequireFlagDefs(require bool) {
@@ -214,7 +219,7 @@ func (p *Parser) ParseCliArgs() error {
 }
 
 func (p *Parser) autoHelp(args []string) {
-    if i := FindHelpFlag(args); i >= 0 {
+    if i := FindHelpFlag(args); p.help_on_empty_args || i >= 0 {
         p.PrintHelp()
         os.Exit(0)
     }
