@@ -160,6 +160,9 @@ func (p *Parser) Parse(args []string) error {
                 case CountDef:
                     def.(CountDef).increment()
                     continue
+                case ModeDef:
+                    def.(ModeDef).setShortMode(sflag)
+                    continue
                 default:
                     if len(token) == 2 {
                         def_ifc = def
@@ -183,8 +186,8 @@ func (p *Parser) Parse(args []string) error {
                         nextVal = &args[i]
                     }
                     switch def_ifc.(type) {
-                    case FuncDef:
-                        def_ifc.(FuncDef).call(*nextVal)
+                    // case FuncDef:
+                    //     def_ifc.(FuncDef).call(*nextVal)
                     default:
                         if err := def_ifc.assign(*nextVal); err != nil {
                             return err

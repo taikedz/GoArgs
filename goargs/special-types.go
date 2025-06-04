@@ -2,6 +2,7 @@ package goargs
 
 import (
 	"fmt"
+    "strings"
     "slices"
 )
 
@@ -91,11 +92,52 @@ type FuncDef struct {
 }
 func (self FuncDef) getHelpString() string { return self.helpstr }
 func (self FuncDef) getName() string { return self.name }
-func (self FuncDef) assign(value string) error { panic("Invalid call to assign() on FuncDef") }
-func (self FuncDef) call(s string) error {return self.innerfunc(s) }
+func (self FuncDef) assign(value string) error { return self.innerfunc(value) }
 
 func (p *Parser) Func(name string, funcdef func(string) error, helpstr string) {
     vdef := FuncDef{name, helpstr, funcdef}
     p.definitions[name] = vdef
     p.enqueueName(name)
+}
+
+// =======
+
+type ModeDef struct {
+    name string
+    value *string
+    helpstr string
+    modes map[rune]string
+}
+
+func (self ModeDef) getHelpString() string { return self.helpstr }
+func (self ModeDef) getName() string { return self.name }
+func (self ModeDef) assign(value string) error {
+    // go through the modes map, and check that the mode value is found there
+    var values []string
+    for _, okval := range(self.modes) {
+        if value == okval {
+            *self.value = value
+            return nil
+        }
+        values = append(values, okval)
+    }
+    return fmt.Errorf("Invalid mode '%s' - choose from: %s", value, strings.Join(values, ", "))
+}
+func (self ModeDef) setShortMode(short rune) {
+    *self.value = self.modes[short]
+}
+
+func (p *Parser) ModeVar(value *string, name string, defval string, modes map[rune]string, helpstr string) {
+    vdef := ModeDef{name, value, helpstr, modes}
+    *vdef.value = defval
+    p.definitions[name] = vdef
+    p.enqueueName(name)
+    for r,_ := range(modes) {
+        p.SetShortFlag(r,name)
+    }
+}
+func (p *Parser) Mode(name string, defval string, modes map[rune]string, helpstr string) *string {
+    var val string
+    p.ModeVar(&val, name, defval, modes, helpstr)
+    return &val
 }
