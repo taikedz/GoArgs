@@ -220,7 +220,7 @@ func (p *Parser) ParseCliArgs() error {
 }
 
 func (p *Parser) autoHelp(args []string) {
-    if i := FindHelpFlag(args); p.help_on_empty_args || i >= 0 {
+    if i := FindHelpFlag(args); (p.help_on_empty_args && len(os.Args) <= 1) || i >= 0 {
         p.PrintHelp()
         os.Exit(0)
     }
