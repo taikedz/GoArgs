@@ -2,6 +2,7 @@ package goargs
 
 import (
 	"fmt"
+    "sort"
     "strings"
     "slices"
 )
@@ -129,10 +130,12 @@ func (self ModeDef) setShortMode(short rune) {
 }
 
 func (p *Parser) ModeVar(value *string, name string, defval string, modes map[rune]string, helpstr string) {
-    mode_helpstr := []string{helpstr}
+    mode_helpstr := []string{}
     for k,v := range modes {
         mode_helpstr = append(mode_helpstr, fmt.Sprintf("      -%c : %s", k, v))
     }
+    sort.Strings(mode_helpstr)
+    mode_helpstr = slices.Insert(mode_helpstr, 0, helpstr)
 
     vdef := ModeDef{name, defval, value, strings.Join(mode_helpstr, "\n"), modes}
     *vdef.value = defval
