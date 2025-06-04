@@ -86,7 +86,15 @@ func (p *Parser) SPrintHelp() string {
 		helplines = append(helplines, fmt.Sprintf("    %s", def.getHelpString()))
 	}
 
+	if len(p.post_helptext) > 0 {
+		helplines = append(helplines, p.post_helptext)
+	}
+
 	return strings.Join(helplines, "\n")
+}
+
+func (p *Parser) SetPostHelptext(text string) {
+	p.post_helptext = text
 }
 
 func (p *Parser) PrintHelp() {

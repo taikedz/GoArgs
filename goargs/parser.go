@@ -25,6 +25,7 @@ type Parser struct {
     shortnames map[rune]VarDef
     longnames []string
     helptext string
+    post_helptext string
     help_on_empty_args bool
     require_flagdefs bool
     // Non-flag tokens in the arguments
