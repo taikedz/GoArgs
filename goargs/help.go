@@ -38,14 +38,19 @@ func (p *Parser) SPrintHelp() string {
 		default:
             var tname string
             switch def.(type) {
-            case ChoicesDef, AppenderDef, FuncDef:
+            case ChoicesDef, AppenderDef, FuncDef, ModeDef:
                 tname = "STRING"
             default:
                 tname = typeName(def)
             }
 			helplines = append(helplines, fmt.Sprintf("  --%s %s", name, tname))
-			if sflag, err := p.runeFromLong(name); err == nil {
-				helplines = append(helplines, fmt.Sprintf("  -%c %s", sflag, tname))
+			switch def.(type) {
+			case ModeDef:
+				// do nothing - this type registers multiple short flags to the same name.
+			default:
+				if sflag, err := p.runeFromLong(name); err == nil {
+					helplines = append(helplines, fmt.Sprintf("  -%c %s", sflag, tname))
+				}
 			}
 		}
 
@@ -68,10 +73,12 @@ func (p *Parser) SPrintHelp() string {
 			helplines = append(helplines, fmt.Sprintf("    (each appearance is counted)"))
 		case AppenderDef:
 			helplines = append(helplines, fmt.Sprintf("    (can be specified multiple times)"))
+		case ModeDef:
+			helplines = append(helplines, fmt.Sprintf("    default: %s", def.(ModeDef).defval))
         case FuncDef:
             // do nothing. the user help will explain all.
 		default:
-			panic(fmt.Sprintf("Internal error: Uncatered type '%t'", def))
+			panic(fmt.Sprintf("Internal error (goargs): Uncatered type '%t'", def))
 		}
 
 		// Flag help string

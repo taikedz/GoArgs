@@ -104,6 +104,7 @@ func (p *Parser) Func(name string, funcdef func(string) error, helpstr string) {
 
 type ModeDef struct {
     name string
+    defval string
     value *string
     helpstr string
     modes map[rune]string
@@ -128,7 +129,12 @@ func (self ModeDef) setShortMode(short rune) {
 }
 
 func (p *Parser) ModeVar(value *string, name string, defval string, modes map[rune]string, helpstr string) {
-    vdef := ModeDef{name, value, helpstr, modes}
+    mode_helpstr := []string{helpstr}
+    for k,v := range modes {
+        mode_helpstr = append(mode_helpstr, fmt.Sprintf("      -%c : %s", k, v))
+    }
+
+    vdef := ModeDef{name, defval, value, strings.Join(mode_helpstr, "\n"), modes}
     *vdef.value = defval
     p.definitions[name] = vdef
     p.enqueueName(name)

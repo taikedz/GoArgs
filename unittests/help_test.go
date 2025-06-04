@@ -53,6 +53,7 @@ func Test_helpst_special(t *testing.T) {
     parser.Choices("tool", []string{"rolling-pin", "hammer"}, "What to use?")
     parser.Appender("noise", "Acceptable squeaks")
     parser.Func("custom", noop, "Something happens")
+    parser.Mode("damage", "blunt", map[rune]string{'b':"blunt", 's':"sharp"}, "Damage type")
 
     helptext := parser.SPrintHelp()
     expect := strings.Join([]string{
@@ -71,6 +72,11 @@ func Test_helpst_special(t *testing.T) {
         "    Acceptable squeaks",
         "  --custom STRING",
         "    Something happens",
+        "  --damage STRING",
+        "    default: blunt",
+        "    Damage type",
+        "      -b : blunt",
+        "      -s : sharp",
     }, "\n")
 	if helptext != expect {
 		t.Errorf("Mismatched help strings. Got:\n<<%s>>\nInstead of:\n<<%s>>", helptext, expect)
