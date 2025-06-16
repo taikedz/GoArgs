@@ -1,14 +1,13 @@
-package goargsunittest
+package goargs
 
 import (
 	"testing"
-	"github.com/taikedz/goargs/goargs"
 	"github.com/taikedz/gocheck"
 )
 
 
 func Test_ParseArgs_MakeVar(t *testing.T) {
-	parser := goargs.NewParser("")
+	parser := NewParser("")
 
 	name := parser.String("name", "nobody", "Their name")
 	age := parser.Int("age", -1, "Their age")
@@ -39,7 +38,7 @@ func Test_ParseArgs_MakeVar(t *testing.T) {
 }
 
 func Test_ParseArgs_Specials(t *testing.T) {
-	parser := goargs.NewParser("")
+	parser := NewParser("")
 
 	verbose_lvl := parser.Count("verbose", "How verbose to be")
 	parser.SetShortFlag('v', "verbose")
@@ -60,7 +59,7 @@ func Test_ParseArgs_Specials(t *testing.T) {
 }
 
 func Test_ParseArgs_Shortflags(t *testing.T) {
-	parser := goargs.NewParser("")
+	parser := NewParser("")
 
 	verbose := parser.Count("verbose", "help")
 	parser.SetShortFlag('v', "verbose")
@@ -103,7 +102,7 @@ func Test_ParseArgs_Good(t *testing.T) {
 	var height float32
 	var admit bool
 
-	parser := goargs.NewParser("")
+	parser := NewParser("")
 
 	parser.StringVar(&name, "name", "nobody", "Their name")
 	parser.IntVar(&age, "age", -1, "Their age")
@@ -127,7 +126,7 @@ func Test_ParseArgs_Good(t *testing.T) {
 }
 
 func Test_ParseArgs_Fail(t *testing.T) {
-	parser := goargs.NewParser("")
+	parser := NewParser("")
 	var value string
 	var number int
 	parser.StringVar(&value, "val", "nothing", "Some value")
@@ -151,7 +150,7 @@ func Test_ParseArgs_Fail(t *testing.T) {
 
 
 func Test_Appender(t *testing.T) {
-    parser := goargs.NewParser("")
+    parser := NewParser("")
 
     values := parser.Appender("file", "File name")
     parser.SetShortFlag('f', "file")
@@ -165,7 +164,7 @@ func Test_Appender(t *testing.T) {
 
 func Test_ParseArgs_Unknowns(t *testing.T) {
     tokens := []string{"a", "--unknown", "", "b", "-x", "c"}
-    parser := goargs.NewParser("")
+    parser := NewParser("")
 
     if err := parser.Parse(tokens); err == nil {
         t.Errorf("Should have failed parsing tokens")
@@ -183,7 +182,7 @@ func Test_ParseArgs_Unknowns(t *testing.T) {
 
 func Test_ParseArgs_Multishortflags(t *testing.T) {
     tokens := []string{"hi", "-ab", "bye"}
-    parser := goargs.NewParser("")
+    parser := NewParser("")
 
     parser.Bool("alpha", false, "help")
     parser.Bool("beta" , false, "help")

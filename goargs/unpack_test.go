@@ -1,8 +1,7 @@
-package goargsunittest
+package goargs
 
 import (
 	"testing"
-	"github.com/taikedz/goargs/goargs"
 	"github.com/taikedz/gocheck"
 )
 
@@ -14,7 +13,7 @@ func Test_Unpack(t *testing.T) {
     var lies bool
 	args := []string{"Jay Smith", "15", "37.8", "true", "0", "other", "stuff"}
 
-	if remains, err := goargs.Unpack(args, &name, &count, &ratio, &truth, &lies); err == nil {
+	if remains, err := Unpack(args, &name, &count, &ratio, &truth, &lies); err == nil {
 		gocheck.Equal(t, name, "Jay Smith")
 		gocheck.Equal(t, count, 15)
 		gocheck.Equal(t, ratio, 37.8)
@@ -25,15 +24,15 @@ func Test_Unpack(t *testing.T) {
 		t.Errorf("Should have parsed OK, got error: %v", err)
 	}
 
-	if err := goargs.UnpackExactly(args[:3], &name, &count, &ratio); err != nil {
+	if err := UnpackExactly(args[:3], &name, &count, &ratio); err != nil {
 		t.Errorf("Should have succeeded!")
 	}
 
-	if err := goargs.UnpackExactly(args, &name, &count, &ratio); err == nil {
+	if err := UnpackExactly(args, &name, &count, &ratio); err == nil {
 		t.Errorf("Should have failed due to excess tokens!")
 	}
 
-	if err := goargs.UnpackExactly(args[:2], &name, &count, &ratio); err == nil {
+	if err := UnpackExactly(args[:2], &name, &count, &ratio); err == nil {
 		t.Errorf("Should have failed due to insufficient tokens!")
 	}
 }

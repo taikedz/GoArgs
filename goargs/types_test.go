@@ -1,9 +1,8 @@
-package goargsunittest
+package goargs
 
 import (
 	"testing"
 	"time"
-	"github.com/taikedz/goargs/goargs"
 	"github.com/taikedz/gocheck"
 )
 
@@ -11,7 +10,7 @@ var functhings []string
 
 
 func Test_BasicTypes(t *testing.T) {
-	p := goargs.NewParser("help")
+	p := NewParser("help")
 
 	my_string  := p.String("astring", "stringy", "help")
 
@@ -75,7 +74,7 @@ func Test_BasicTypes(t *testing.T) {
 }
 
 func Test_SpecialTypes(t *testing.T) {
-	parser := goargs.NewParser("help")
+	parser := NewParser("help")
 	counter := parser.Count("guest", "help")
 	choice := parser.Choices("dish", []string{"rice", "noodles"}, "help")
 	appended := parser.Appender("toppings", "help")
@@ -94,7 +93,7 @@ func Test_SpecialTypes(t *testing.T) {
 }
 
 func Test_ShortFlagCombo(t *testing.T) {
-	parser := goargs.NewParser("help")
+	parser := NewParser("help")
 
 	yes := parser.Bool("yes", false, "help")
 	parser.SetShortFlag('y', "yes")

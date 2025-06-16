@@ -93,16 +93,20 @@ func (p *Parser) SPrintHelp() string {
 	return strings.Join(helplines, "\n")
 }
 
+/* Set the text to print at the end of the help message, after the parameters have been listed.
+*/
 func (p *Parser) SetPostHelptext(text string) {
 	p.post_helptext = text
 }
 
+// Print the help message to stderr
 func (p *Parser) PrintHelp() {
 	print(p.SPrintHelp())
     println("")
 }
 
-func FindHelpFlag(tokens []string) int {
+// Identify the index of a token matching "-h" or "--help"
+func findHelpFlag(tokens []string) int {
 	for i,token := range tokens {
 		if token == "--help" || token == "-h" {
 			return i

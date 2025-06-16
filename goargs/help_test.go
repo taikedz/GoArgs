@@ -1,15 +1,14 @@
-package goargsunittest
+package goargs
 
 import (
 	"testing"
     "strings"
-	"github.com/taikedz/goargs/goargs"
 	"github.com/taikedz/gocheck"
 )
 
 
 func Test_helpstr(t *testing.T) {
-	parser := goargs.NewParser("Whack-a-mole")
+	parser := NewParser("Whack-a-mole")
 
 	parser.String("gopher", "gaffer", "Wee rat")
     parser.SetShortFlag('g', "gopher")
@@ -46,7 +45,7 @@ func noop(value string) error {
 }
 
 func Test_helpst_special(t *testing.T) {
-    parser := goargs.NewParser("Whack-a-mole")
+    parser := NewParser("Whack-a-mole")
 
     parser.Count("hard", "How hard?")
     parser.SetShortFlag('h', "hard")
@@ -84,8 +83,8 @@ func Test_helpst_special(t *testing.T) {
 }
 
 func Test_findhelp(t *testing.T) {
-	gocheck.Equal(t, 1, goargs.FindHelpFlag([]string{"a", "-h", "--help"}))
-	gocheck.Equal(t, 0, goargs.FindHelpFlag([]string{"-h", "next", "--help"}))
-	gocheck.Equal(t, 2, goargs.FindHelpFlag([]string{"-he", "next", "--help"}))
-	gocheck.Equal(t, -1, goargs.FindHelpFlag([]string{"a", "--", "-h", "--help"}))
+	gocheck.Equal(t, 1,  findHelpFlag([]string{"a", "-h", "--help"}))
+	gocheck.Equal(t, 0,  findHelpFlag([]string{"-h", "next", "--help"}))
+	gocheck.Equal(t, 2,  findHelpFlag([]string{"-he", "next", "--help"}))
+	gocheck.Equal(t, -1, findHelpFlag([]string{"a", "--", "-h", "--help"}))
 }
