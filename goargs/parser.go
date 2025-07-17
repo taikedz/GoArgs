@@ -10,6 +10,7 @@ import (
 
 const _VALID_SFLAGS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
+// internal
 type VarDef interface {
     getName() string
     assign(string) error
@@ -34,6 +35,10 @@ type Parser struct {
     passdown_args []string
 }
 
+/* Create a new parser instance, with initial help text.
+
+Help text is printed before the flags' individual help strings are printed.
+*/
 func NewParser(helptext string) Parser {
     var p Parser
     p.definitions = make(map[string]VarDef)
@@ -43,14 +48,18 @@ func NewParser(helptext string) Parser {
     return p
 }
 
+// Define whether an empty argument set causes the help text to be printed and command exits.
 func (p *Parser) SetHelpOnEmptyArgs(onempty bool) {
     p.help_on_empty_args = onempty
 }
 
+// Determine whether flags need to be defined. If false, treat unrecognised flags as
+//  basic string arguments.
 func (p *Parser) RequireFlagDefs(require bool) {
     p.require_flagdefs = require
 }
 
+// register a flag in the parser
 func (p *Parser) enqueueName(name string) {
     if slices.Contains(p.longnames, name) {
         panic(fmt.Sprintf("Flag '--%s' already defined.", name))
@@ -61,6 +70,10 @@ func (p *Parser) enqueueName(name string) {
     p.longnames = append(p.longnames, name)
 }
 
+/* Set a single-character notation for an existing long flag. 
+
+Panics if the code attempts to set a short flag rune that already exists.
+*/
 func (p *Parser) SetShortFlag(short rune, longname string) {
     if ! strings.ContainsRune(_VALID_SFLAGS, short) {
         panic(fmt.Sprintf("Internal error: cannot use rune %c", short))
@@ -76,7 +89,7 @@ func (p *Parser) SetShortFlag(short rune, longname string) {
 }
 
 // Args returns the positional tokens from the parsed arguments
-// Args does not return pass-down arguments
+// Args does not return pass-down arguments (after the first "--" token)
 func (p *Parser) Args() []string {
     return p.positionals[:]
 }

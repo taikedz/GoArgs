@@ -1,10 +1,9 @@
 package goargs
 
-
 import (
 	"fmt"
-	"strings"
 	"reflect"
+	"strings"
 )
 
 func (p *Parser) runeFromLong(name string) (rune, error) {
@@ -25,7 +24,7 @@ func typeName(def VarDef) string {
 func (p *Parser) SPrintHelp() string {
 	// return a string of formatted help information
 	helplines := []string{p.helptext, ""}
-	for _,name := range p.longnames {
+	for _, name := range p.longnames {
 		def := p.definitions[name]
 
 		// Flag format
@@ -36,17 +35,17 @@ func (p *Parser) SPrintHelp() string {
 				helplines = append(helplines, fmt.Sprintf("  -%c", sflag))
 			}
 		default:
-            var tname string
-            switch def.(type) {
-            case ChoicesDef, AppenderDef, FuncDef, ModeDef:
-                tname = "STRING"
-            default:
-                tname = typeName(def)
-            }
+			var tname string
+			switch def.(type) {
+			case ChoicesDef, AppenderDef, FuncDef, ModeDef:
+				tname = "STRING"
+			default:
+				tname = typeName(def)
+			}
 			helplines = append(helplines, fmt.Sprintf("  --%s %s", name, tname))
 			switch def.(type) {
 			case ModeDef:
-				// do nothing - this type registers multiple short flags to the same name.
+				helplines = append(helplines, "    (use short flag or STRING value)")
 			default:
 				if sflag, err := p.runeFromLong(name); err == nil {
 					helplines = append(helplines, fmt.Sprintf("  -%c %s", sflag, tname))
@@ -60,7 +59,7 @@ func (p *Parser) SPrintHelp() string {
 			helplines = append(helplines, fmt.Sprintf("    default: %s", def.(StringDef).defval))
 		case ChoicesDef:
 			helplines = append(helplines, fmt.Sprintf("    default: %s", def.(ChoicesDef).choices[0]))
-			helplines = append(helplines, fmt.Sprintf("    choices: %s", strings.Join(def.(ChoicesDef).choices, ", ") ))
+			helplines = append(helplines, fmt.Sprintf("    choices: %s", strings.Join(def.(ChoicesDef).choices, ", ")))
 		case IntDef, Int64Def, UintDef:
 			helplines = append(helplines, fmt.Sprintf("    default: %d", def.(IntDef).defval))
 		case FloatDef, Float64Def:
@@ -75,8 +74,8 @@ func (p *Parser) SPrintHelp() string {
 			helplines = append(helplines, fmt.Sprintf("    (can be specified multiple times)"))
 		case ModeDef:
 			helplines = append(helplines, fmt.Sprintf("    default: %s", def.(ModeDef).defval))
-        case FuncDef:
-            // do nothing. the user help will explain all.
+		case FuncDef:
+			// do nothing. the user help will explain all.
 		default:
 			panic(fmt.Sprintf("Internal error (goargs): Uncatered type '%t'", def))
 		}
@@ -94,7 +93,7 @@ func (p *Parser) SPrintHelp() string {
 }
 
 /* Set the text to print at the end of the help message, after the parameters have been listed.
-*/
+ */
 func (p *Parser) SetPostHelptext(text string) {
 	p.post_helptext = text
 }
@@ -102,12 +101,12 @@ func (p *Parser) SetPostHelptext(text string) {
 // Print the help message to stderr
 func (p *Parser) PrintHelp() {
 	print(p.SPrintHelp())
-    println("")
+	println("")
 }
 
 // Identify the index of a token matching "-h" or "--help"
 func findHelpFlag(tokens []string) int {
-	for i,token := range tokens {
+	for i, token := range tokens {
 		if token == "--help" || token == "-h" {
 			return i
 		} else if token == "--" {
