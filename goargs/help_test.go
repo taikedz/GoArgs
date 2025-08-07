@@ -14,7 +14,7 @@ func Test_helpstr(t *testing.T) {
 	parser.Int("times", 1, "How many?")
 	parser.Float("freq", 0.2, "WPS (whacks per second)")
 
-	helptext := parser.sPrintHelp()
+	helptext := parser.SPrintHelp()
 	expect := strings.Join([]string{
 		"Whack-a-mole",
 		"",
@@ -52,7 +52,7 @@ func Test_helpst_special(t *testing.T) {
 	parser.Func("custom", noop, "Something happens")
 	parser.Mode("damage", "blunt", map[rune]string{'b': "blunt", 's': "sharp"}, "Damage type")
 
-	helptext := parser.sPrintHelp()
+	helptext := parser.SPrintHelp()
 	expect := strings.Join([]string{
 		"Whack-a-mole",
 		"",

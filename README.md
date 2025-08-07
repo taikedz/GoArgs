@@ -6,19 +6,20 @@ Go's default `flag` library feels limited as a basic library:
 * no support for `--` "raw" passdown tokens after main CLI arguments
 * no support for short flags and aggregated short flags (`-x -y -z` as `-xyz`)
 
-GoArgs aims to provide a simple yet more flexible module for parsing arguments.
+GoArgs aims to provide a simple yet more flexible module for parsing arguments, with similar feel to the default `flag` package.
 
-The codebase aims to remain small, ensuring it is easy to audit as an external dependency. It is not as fully featured as other implementations out there. See [alternatives](#alternatives) for more options.
+The codebase aims to remain small, ensuring it is easy to audit as an external dependency. It is not as fully featured as other implementations out there.
+
+I hope it is useful to someone who just needs something straighforward to get things done. For a real life usage o fthis package, see [AlpackaNG](https://github.com/taikedz/alpacka-ng) by the same author.
 
 ## To Do
 
-* Documentation
-* Make relevant items private
+* Documentation overview
 * Re-evaluate multi-error-type returns/error classfication
 
 ## Features
 
-Compatibility wtih `flag`:
+Similarity wtih `flag` typical usage:
 
 * Create pointer from argument declaration (`flag.<Type>()` equivalents)
 * Pass pointer into argument delcaration (`flag.<Type>Var()` equivalents)
@@ -28,23 +29,22 @@ Types:
 
 * Basic: String, Int, Int64, Uint, Float, Float64, Bool, time.Duration
 * Additional flag types:
-    * Counter: incerments a counter every time the flag is seen (such as `-vvv` for incresed levels of verbosity)
     * Choices: predefine a number of possible values for a given flag
+    * Counter: increments a counter every time the flag is seen (such as `-v -v -v` or `-vvv` for incresed levels of verbosity)
     * Appender: allow using the same flag multiple times (`--mount /this:/right/here --mount /that:/over/there` for two mounts)
+    * Mode : define groups of mutually-exclusive flags, with the last-sepcified flag taking priority over the previous ones
 
 Improved features:
 
 * Flags can appear intermixed with positional arguments
-* Parser operates on any developer-specified `[]string` of tokens (not just `os.Args`)
-* Parser recognises `--` as end of direct arguments, and stores subsequent "raw" passdown tokens
-* Parser can opt to ignore unknown flags, or return error on unknown arguments, as-needed.
-* Unpacking methods `Unpack()` and `UnpackExactly()` help extract and parse positional arguments (supported var types: `*string`, `*int`, `*float`, `*bool`)
 * Long-name flags are specified only with double-hyphen notation
 * Short flags notation (`Parser.SetShortFlag("v", "verbose")`)
     * Short flags can be combined with single-hyphen notation (e.g. `-eux` for `-e -u -x`, or `-vv` for `-v -v` or `--verbose --verbose`)
+* Parser operates on any developer-specified `[]string` of tokens (not just `os.Args`)
+* Parser recognises `--` as end of direct arguments, and stores subsequent "raw" passdown tokens
+* Parser can opt to ignore unknown flags (storing them unparsed as positionals), or return error on unknown arguments, as-needed.
+* Unpacking methods `Unpack()` and `UnpackExactly()` help extract and parse positional arguments (supported var types: `*string`, `*int`, `*float`, `*bool`)
 * Help obtainable as string or printed; help arguments always listed in declaration order
-* Help flags `--help` and `-h` automatically detected when using `ParseCliArgs()`, except when appearing after the first `--`
-
 
 ## Examples
 
@@ -75,7 +75,7 @@ parser.Parse(tokens)
 fmt.Printf("%v, %v -> %v", count, *opt, parser.Args())
 ```
 
-Some runnable example files are linked below. For further examples, see [unit tests](./unittests/)
+Some runnable example files are linked below. For further examples, see [examples](./examples/):
 
 [salute.go](examples/salute.go)
 
@@ -97,16 +97,3 @@ go run examples/splat.go w one.txt two.txt -- "hi and bye" "this and that"
 go run examples/splat.go w one.txt --help two.txt -- "hi and bye" "this and that"
 go run examples/splat.go w one.txt two.txt -- "hi and bye" --help "this and that"
 ```
-
-## Alternatives
-
-Why use this `taikedz/GoArgs` ? If your needs are minimal and/or you literally need to copy the files in to your project directly, then maybe you have a case to use this lib. I have made a point of keeping the feature set relatively straighforward and flexible, and in keeping with the standard library's style. I have also tried to make a point to keep the code itself straightforwad so that you may audit it.
-
-Elsewise, please treat it as a learning tool for its easy-to-read implementation. This package did begin as a learning project, started whilst on an airplane.
-
-More-established packages exist that also offer partial drop-in capability, as well as support for combined short options, and the `--` arguments sequence separator:
-
-* Two which I am aware of:
-    * <https://pkg.go.dev/github.com/spf13/pflag>
-    * <https://pkg.go.dev/github.com/jessevdk/go-flags>
-* Search the go package listings in general: <https://pkg.go.dev/search?q=flag&m=>

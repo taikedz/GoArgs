@@ -22,7 +22,9 @@ func typeName(def t_VarDef) string {
 	return strings.ToUpper(typename[4:])
 }
 
-func (p *Parser) sPrintHelp() string {
+// Produce help text string and return it.
+// Panics if an unknown type is unimplemented (goargs developer error. please report it!)
+func (p *Parser) SPrintHelp() string {
 	// return a string of formatted help information
 	helplines := []string{p.helptext, ""}
 	for _, name := range p.longnames {
@@ -99,16 +101,14 @@ func (p *Parser) SetPostHelptext(text string) {
 	p.post_helptext = text
 }
 
-// Print the help message to stdout
-// Panics if an unknown type is unimplemented (goargs developer error. please report it!)
+// Print the help message to stdout, uses SPrintHelp(), can panic
 func (p *Parser) PrintHelp() {
-	fmt.Println(p.sPrintHelp())
+	fmt.Println(p.SPrintHelp())
 }
 
-// Print the help message to stderr
-// Panics if an unknown type is unimplemented (goargs developer error. please report it!)
+// Print the help message to stderr, uses SPrintHelp(), can panic
 func (p *Parser) PrintHelpE() {
-	print(p.sPrintHelp())
+	print(p.SPrintHelp())
 	println("")
 }
 
