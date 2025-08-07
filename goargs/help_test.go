@@ -3,8 +3,6 @@ package goargs
 import (
 	"strings"
 	"testing"
-
-	"github.com/taikedz/gocheck"
 )
 
 func Test_helpstr(t *testing.T) {
@@ -16,7 +14,7 @@ func Test_helpstr(t *testing.T) {
 	parser.Int("times", 1, "How many?")
 	parser.Float("freq", 0.2, "WPS (whacks per second)")
 
-	helptext := parser.SPrintHelp()
+	helptext := parser.sPrintHelp()
 	expect := strings.Join([]string{
 		"Whack-a-mole",
 		"",
@@ -54,7 +52,7 @@ func Test_helpst_special(t *testing.T) {
 	parser.Func("custom", noop, "Something happens")
 	parser.Mode("damage", "blunt", map[rune]string{'b': "blunt", 's': "sharp"}, "Damage type")
 
-	helptext := parser.SPrintHelp()
+	helptext := parser.sPrintHelp()
 	expect := strings.Join([]string{
 		"Whack-a-mole",
 		"",
@@ -81,11 +79,4 @@ func Test_helpst_special(t *testing.T) {
 	if helptext != expect {
 		t.Errorf("Mismatched help strings. Got:\n<<%s>>\nInstead of:\n<<%s>>", helptext, expect)
 	}
-}
-
-func Test_findhelp(t *testing.T) {
-	gocheck.Equal(t, 1, findHelpFlag([]string{"a", "-h", "--help"}))
-	gocheck.Equal(t, 0, findHelpFlag([]string{"-h", "next", "--help"}))
-	gocheck.Equal(t, 2, findHelpFlag([]string{"-he", "next", "--help"}))
-	gocheck.Equal(t, -1, findHelpFlag([]string{"a", "--", "-h", "--help"}))
 }

@@ -2,6 +2,7 @@ package goargs
 
 import (
 	"fmt"
+	"os"
 	"reflect"
 	"strings"
 )
@@ -12,16 +13,16 @@ func (p *Parser) runeFromLong(name string) (rune, error) {
 			return char, nil
 		}
 	}
-	return '-', fmt.Errorf("No short flag found for '%s'", name)
+	return '-', fmt.Errorf("no short flag found for '%s'", name)
 }
 
-func typeName(def VarDef) string {
+func typeName(def t_VarDef) string {
 	tokens := strings.Split(fmt.Sprintf("%s", reflect.TypeOf(def)), ".")
 	typename := tokens[len(tokens)-1]
-	return strings.ToUpper(typename[:len(typename)-3])
+	return strings.ToUpper(typename[4:])
 }
 
-func (p *Parser) SPrintHelp() string {
+func (p *Parser) sPrintHelp() string {
 	// return a string of formatted help information
 	helplines := []string{p.helptext, ""}
 	for _, name := range p.longnames {
@@ -29,7 +30,7 @@ func (p *Parser) SPrintHelp() string {
 
 		// Flag format
 		switch def.(type) {
-		case BoolDef, CountDef:
+		case def_Bool, def_Count:
 			helplines = append(helplines, fmt.Sprintf("  --%s", name))
 			if sflag, err := p.runeFromLong(name); err == nil {
 				helplines = append(helplines, fmt.Sprintf("  -%c", sflag))
@@ -37,14 +38,14 @@ func (p *Parser) SPrintHelp() string {
 		default:
 			var tname string
 			switch def.(type) {
-			case ChoicesDef, AppenderDef, FuncDef, ModeDef:
+			case def_Choices, def_Appender, def_Func, def_Mode:
 				tname = "STRING"
 			default:
 				tname = typeName(def)
 			}
 			helplines = append(helplines, fmt.Sprintf("  --%s %s", name, tname))
 			switch def.(type) {
-			case ModeDef:
+			case def_Mode:
 				helplines = append(helplines, "    (use short flag or STRING value)")
 			default:
 				if sflag, err := p.runeFromLong(name); err == nil {
@@ -55,26 +56,26 @@ func (p *Parser) SPrintHelp() string {
 
 		// Flag default value
 		switch def.(type) {
-		case StringDef:
-			helplines = append(helplines, fmt.Sprintf("    default: %s", def.(StringDef).defval))
-		case ChoicesDef:
-			helplines = append(helplines, fmt.Sprintf("    default: %s", def.(ChoicesDef).choices[0]))
-			helplines = append(helplines, fmt.Sprintf("    choices: %s", strings.Join(def.(ChoicesDef).choices, ", ")))
-		case IntDef, Int64Def, UintDef:
-			helplines = append(helplines, fmt.Sprintf("    default: %d", def.(IntDef).defval))
-		case FloatDef, Float64Def:
-			helplines = append(helplines, fmt.Sprintf("    default: %f", def.(FloatDef).defval))
-		case BoolDef:
-			helplines = append(helplines, fmt.Sprintf("    default: %t", def.(BoolDef).defval))
-		case DurationDef: // DurationDef, UnmarshalerDef
-			helplines = append(helplines, fmt.Sprintf("    default: %v", def.(DurationDef).defval))
-		case CountDef:
+		case def_String:
+			helplines = append(helplines, fmt.Sprintf("    default: %s", def.(def_String).defval))
+		case def_Choices:
+			helplines = append(helplines, fmt.Sprintf("    default: %s", def.(def_Choices).choices[0]))
+			helplines = append(helplines, fmt.Sprintf("    choices: %s", strings.Join(def.(def_Choices).choices, ", ")))
+		case def_Int, def_Int64, def_Uint:
+			helplines = append(helplines, fmt.Sprintf("    default: %d", def.(def_Int).defval))
+		case def_Float, def_Float64:
+			helplines = append(helplines, fmt.Sprintf("    default: %f", def.(def_Float).defval))
+		case def_Bool:
+			helplines = append(helplines, fmt.Sprintf("    default: %t", def.(def_Bool).defval))
+		case def_Duration: // DurationDef, UnmarshalerDef
+			helplines = append(helplines, fmt.Sprintf("    default: %v", def.(def_Duration).defval))
+		case def_Count:
 			helplines = append(helplines, fmt.Sprintf("    (each appearance is counted)"))
-		case AppenderDef:
+		case def_Appender:
 			helplines = append(helplines, fmt.Sprintf("    (can be specified multiple times)"))
-		case ModeDef:
-			helplines = append(helplines, fmt.Sprintf("    default: %s", def.(ModeDef).defval))
-		case FuncDef:
+		case def_Mode:
+			helplines = append(helplines, fmt.Sprintf("    default: %s", def.(def_Mode).defval))
+		case def_Func:
 			// do nothing. the user help will explain all.
 		default:
 			panic(fmt.Sprintf("Internal error (goargs): Uncatered type '%t'", def))
@@ -98,14 +99,25 @@ func (p *Parser) SetPostHelptext(text string) {
 	p.post_helptext = text
 }
 
-// Print the help message to stderr
+// Print the help message to stdout
+// Panics if an unknown type is unimplemented (goargs developer error. please report it!)
 func (p *Parser) PrintHelp() {
-	print(p.SPrintHelp())
+	fmt.Println(p.sPrintHelp())
+}
+
+// Print the help message to stderr
+// Panics if an unknown type is unimplemented (goargs developer error. please report it!)
+func (p *Parser) PrintHelpE() {
+	print(p.sPrintHelp())
 	println("")
 }
 
 // Identify the index of a token matching "-h" or "--help"
-func findHelpFlag(tokens []string) int {
+// e.g. `if FindHelpFlag(nil) >= 0 { ... printHelp() ... }`
+func FindHelpFlag(tokens []string) int {
+	if tokens == nil {
+		tokens = os.Args[1:]
+	}
 	for i, token := range tokens {
 		if token == "--help" || token == "-h" {
 			return i

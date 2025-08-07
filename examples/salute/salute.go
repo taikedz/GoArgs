@@ -38,8 +38,12 @@ func main() {
 
 	// Perform the parse. If `--help` is found amongst the flags, prints the help and exits
 	if err := parser.ParseCliArgs(); err != nil {
-		fmt.Printf("! -> %v\n", err)
-		os.Exit(1)
+		if goargs.FindHelpFlag(nil) >= 0 { // find help flag, implicitly in CLI args
+			parser.PrintHelp()
+		} else {
+			fmt.Printf("! -> %v\n", err)
+			os.Exit(1)
+		}
 	}
 
 	// The variable is a pointed, remember to dereference!
