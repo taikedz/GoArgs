@@ -82,15 +82,16 @@ func (p *Parser) SetShortFlag(short rune, longname string) {
 	p.shortnames[short] = def
 }
 
-// Args returns the positional tokens from the parsed arguments
-// Args does not return pass-down arguments (after the first "--" token)
+// Args returns the positional tokens from the parsed arguments.
+// Args does not return pass-down arguments (after the first "--" token).
+// See ExtraArgs() for passdown-arguments
 func (p *Parser) Args() []string {
 	return p.positionals[:]
 }
 
-// Arg returns the i'th positional argument, after flags have been processed.
-// Arg does not process the pass-down arguments.
-// Arg returns an error if the index is out of bounds
+// Arg(i) returns the i'th positional argument, after flags have been processed.
+// Arg(i) cannot be used to access pass-down arguments.
+// Arg(i) returns an error if the index is out of bounds
 func (p *Parser) Arg(i int) (string, error) {
 	if i < len(p.positionals) {
 		return p.positionals[i], nil
@@ -99,8 +100,8 @@ func (p *Parser) Arg(i int) (string, error) {
 	}
 }
 
-// ExtraArgs returns the list of tokens found after the first "--", if any
-// If none are found, the returned slice is empty
+// ExtraArgs returns the list of tokens found after the first "--", if any.
+// If none are found, the returned slice is empty.
 func (p *Parser) ExtraArgs() []string {
 	return p.passdown_args[:]
 }

@@ -19,7 +19,7 @@ func (self def_String) getHelpString() string     { return self.helpstr }
 func (self def_String) getName() string           { return self.name }
 func (self def_String) assign(value string) error { *self.value = value; return nil }
 
-// Register a string argument, storing to the supplied `value *string` pointer
+// Register a string flag, storing to the supplied `value *string` pointer
 func (p *Parser) StringVar(value *string, name string, defval string, helpstr string) {
 	vdef := def_String{name, defval, value, helpstr}
 	*vdef.value = defval
@@ -27,7 +27,7 @@ func (p *Parser) StringVar(value *string, name string, defval string, helpstr st
 	p.enqueueName(name)
 }
 
-// Register a string argument, storing to the returned `*string` pointer
+// Register a string flag, storing to the returned `*string` pointer
 func (p *Parser) String(name string, defval string, helpstr string) *string {
 	var val string
 	p.StringVar(&val, name, defval, helpstr)
@@ -54,7 +54,7 @@ func (self def_Int) assign(value string) error {
 	return nil
 }
 
-// Register an int argument, storing to the supplied `value *int` pointer
+// Register an int flag, storing to the supplied `value *int` pointer
 func (p *Parser) IntVar(value *int, name string, defval int, helpstr string) {
 	vdef := def_Int{name, defval, value, helpstr}
 	*vdef.value = defval
@@ -62,7 +62,7 @@ func (p *Parser) IntVar(value *int, name string, defval int, helpstr string) {
 	p.enqueueName(name)
 }
 
-// Register an int argument, storing to the returned `*int` pointer
+// Register an int flag, storing to the returned `*int` pointer
 func (p *Parser) Int(name string, defval int, helpstr string) *int {
 	var val int
 	p.IntVar(&val, name, defval, helpstr)
@@ -89,7 +89,7 @@ func (self def_Int64) assign(value string) error {
 	return nil
 }
 
-// Register an int64 argument, storing to the supplied `value *int64` pointer
+// Register an int64 flag, storing to the supplied `value *int64` pointer
 func (p *Parser) Int64Var(value *int64, name string, defval int64, helpstr string) {
 	vdef := def_Int64{name, defval, value, helpstr}
 	*vdef.value = defval
@@ -97,7 +97,7 @@ func (p *Parser) Int64Var(value *int64, name string, defval int64, helpstr strin
 	p.enqueueName(name)
 }
 
-// Register an int64 argument, storing to the returned `*int64` pointer
+// Register an int64 flag, storing to the returned `*int64` pointer
 func (p *Parser) Int64(name string, defval int64, helpstr string) *int64 {
 	var val int64
 	p.Int64Var(&val, name, defval, helpstr)
@@ -124,7 +124,7 @@ func (self def_Uint) assign(value string) error {
 	return nil
 }
 
-// Register an uint argument, storing to the supplied `value *uint` pointer
+// Register an uint flag, storing to the supplied `value *uint` pointer
 func (p *Parser) UintVar(value *uint, name string, defval uint, helpstr string) {
 	vdef := def_Uint{name, defval, value, helpstr}
 	*vdef.value = defval
@@ -132,7 +132,7 @@ func (p *Parser) UintVar(value *uint, name string, defval uint, helpstr string) 
 	p.enqueueName(name)
 }
 
-// Register an uint argument, storing to the returned `*uint` pointer
+// Register an uint flag, storing to the returned `*uint` pointer
 func (p *Parser) Uint(name string, defval uint, helpstr string) *uint {
 	var val uint
 	p.UintVar(&val, name, defval, helpstr)
@@ -159,7 +159,7 @@ func (self def_Float) assign(value string) error {
 	return nil
 }
 
-// Register a float argument, storing to the supplied `value *float` pointer
+// Register a float flag, storing to the supplied `value *float` pointer
 func (p *Parser) FloatVar(value *float32, name string, defval float32, helpstr string) {
 	vdef := def_Float{name, defval, value, helpstr}
 	*vdef.value = defval
@@ -167,7 +167,7 @@ func (p *Parser) FloatVar(value *float32, name string, defval float32, helpstr s
 	p.enqueueName(name)
 }
 
-// Register a float argument, storing to the returned `*float` pointer
+// Register a float flag, storing to the returned `*float` pointer
 func (p *Parser) Float(name string, defval float32, helpstr string) *float32 {
 	var val float32
 	p.FloatVar(&val, name, defval, helpstr)
@@ -194,7 +194,7 @@ func (self def_Float64) assign(value string) error {
 	return nil
 }
 
-// Register a float64 argument, storing to the supplied `value *float64` pointer
+// Register a float64 flag, storing to the supplied `value *float64` pointer
 func (p *Parser) Float64Var(value *float64, name string, defval float64, helpstr string) {
 	vdef := def_Float64{name, defval, value, helpstr}
 	*vdef.value = defval
@@ -202,7 +202,7 @@ func (p *Parser) Float64Var(value *float64, name string, defval float64, helpstr
 	p.enqueueName(name)
 }
 
-// Register a float64 argument, storing to the returned `*float64` pointer
+// Register a float64 flag, storing to the returned `*float64` pointer
 func (p *Parser) Float64(name string, defval float64, helpstr string) *float64 {
 	var val float64
 	p.Float64Var(&val, name, defval, helpstr)
@@ -225,7 +225,7 @@ func (self def_Bool) assign(value string) error {
 }
 func (self def_Bool) activate() { *self.value = !self.defval }
 
-// Register a bool argument, storing to the supplied `value *bool` pointer
+// Register a bool flag, storing to the supplied `value *bool` pointer
 func (p *Parser) BoolVar(value *bool, name string, defval bool, helpstr string) {
 	vdef := def_Bool{name, defval, value, helpstr}
 	*vdef.value = defval
@@ -233,7 +233,7 @@ func (p *Parser) BoolVar(value *bool, name string, defval bool, helpstr string) 
 	p.enqueueName(name)
 }
 
-// Register a bool argument, storing to the returned `*bool` pointer
+// Register a bool flag, storing to the returned `*bool` pointer
 func (p *Parser) Bool(name string, defval bool, helpstr string) *bool {
 	var val bool
 	p.BoolVar(&val, name, defval, helpstr)
@@ -260,7 +260,7 @@ func (self def_Duration) assign(value string) error {
 	}
 }
 
-// Register a time.Duration argument, storing to the supplied `value *time.Duration` pointer
+// Register a time.Duration flag, storing to the supplied `value *time.Duration` pointer
 func (p *Parser) DurationVar(value *time.Duration, name string, defval time.Duration, helpstr string) {
 	vdef := def_Duration{name, defval, value, helpstr}
 	*vdef.value = defval
@@ -268,7 +268,7 @@ func (p *Parser) DurationVar(value *time.Duration, name string, defval time.Dura
 	p.enqueueName(name)
 }
 
-// Register a time.Duration argument, storing to the returned `*time.Duration` pointer
+// Register a time.Duration flag, storing to the returned `*time.Duration` pointer
 func (p *Parser) Duration(name string, defval time.Duration, helpstr string) *time.Duration {
 	var val time.Duration
 	p.DurationVar(&val, name, defval, helpstr)

@@ -20,16 +20,16 @@ func (self def_Count) assign(value string) error {
 }
 func (self def_Count) increment() { *self.value++ }
 
-// Register a Count argument, storing to the supplied `value *int` pointer
-// A Count argument increments by 1 every time the flag is seen.
+// Register a Count flag, storing to the supplied `value *int` pointer
+// A Count flag increments by 1 every time the flag is seen.
 func (p *Parser) CountVar(value *int, name string, helpstr string) {
 	vdef := def_Count{name, value, helpstr}
 	p.definitions[name] = vdef
 	p.enqueueName(name)
 }
 
-// Register a Count argument, storing to the returned `*int` pointer
-// A Count argument increments by 1 every time the flag is seen.
+// Register a Count flag, storing to the returned `*int` pointer
+// A Count flag increments by 1 every time the flag is seen.
 func (p *Parser) Count(name string, helpstr string) *int {
 	var val int = 0
 	p.CountVar(&val, name, helpstr)
@@ -55,8 +55,8 @@ func (self def_Choices) assign(value string) error {
 	return nil
 }
 
-// Register a Choices argument, storing to the supplied `value *string` pointer
-// A Choices argument will only accept one of the specified `choices []string` elements
+// Register a Choices flag, storing to the supplied `value *string` pointer
+// A Choices flag will only accept one of the specified `choices []string` elements
 func (p *Parser) ChoicesVar(value *string, name string, choices []string, helpstr string) {
 	vdef := def_Choices{name, value, helpstr, choices}
 	*vdef.value = choices[0]
@@ -64,8 +64,8 @@ func (p *Parser) ChoicesVar(value *string, name string, choices []string, helpst
 	p.enqueueName(name)
 }
 
-// Register a Choices argument, storing to the returned `*string` pointer
-// A Choices argument will only accept one of the specified `choices []string` elements
+// Register a Choices flag, storing to the returned `*string` pointer
+// A Choices flag will only accept one of the specified `choices []string` elements
 func (p *Parser) Choices(name string, choices []string, helpstr string) *string {
 	var val string
 	p.ChoicesVar(&val, name, choices, helpstr)
@@ -87,16 +87,16 @@ func (self def_Appender) assign(value string) error {
 	return nil
 }
 
-// Register an Appender argument, storing to the supplied `value *[]string` pointer
-// An Appender argument will append the associated value into the specified slice
+// Register an Appender flag, storing to the supplied `value *[]string` pointer
+// An Appender flag will append the associated value into the specified slice
 func (p *Parser) AppenderVar(value *[]string, name string, helpstr string) {
 	vdef := def_Appender{name, value, helpstr}
 	p.definitions[name] = vdef
 	p.enqueueName(name)
 }
 
-// Register an Appender argument, storing to the returned `*[]string` pointer
-// An Appender argument will append the associated value into the returned slice
+// Register an Appender flag, storing to the returned `*[]string` pointer
+// An Appender flag will append the associated value into the returned slice
 func (p *Parser) Appender(name string, helpstr string) *[]string {
 	var val []string
 	p.AppenderVar(&val, name, helpstr)
@@ -115,7 +115,7 @@ func (self def_Func) getHelpString() string     { return self.helpstr }
 func (self def_Func) getName() string           { return self.name }
 func (self def_Func) assign(value string) error { return self.innerfunc(value) }
 
-// Register a Function argument
+// Register a Function flag
 // The function defined at `funcdef` will be called each time the flag is seen, and be called
 // with the associated value. If no value is needed, consider using Count instead
 func (p *Parser) Func(name string, funcdef func(string) error, helpstr string) {
@@ -153,8 +153,8 @@ func (self def_Mode) setShortMode(short rune) {
 }
 
 /*
-Register a Mode argument, storing the value in the specified `value *string` pointer
-The stored value of a Mode argument corresponds to the last mode flag parsed.
+Register a Mode flag, storing the value in the specified `value *string` pointer
+The stored value of a Mode flag corresponds to the last mode flag parsed.
 Mode flags systematically use a map of runes to mode flag names
 
 	// Example `modes` argument
@@ -182,7 +182,7 @@ func (p *Parser) ModeVar(value *string, name string, defval string, modes map[ru
 	}
 }
 
-// Register a Mode argument, storing the value in the returned `*string` pointer
+// Register a Mode flag, storing the value in the returned `*string` pointer
 // See ModeVar for details
 func (p *Parser) Mode(name string, defval string, modes map[rune]string, helpstr string) *string {
 	var val string
