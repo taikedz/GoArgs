@@ -125,6 +125,12 @@ func (p *Parser) Func(name string, funcdef func(string) error, helpstr string) {
 }
 
 // =======
+// FIXME: Might have done this wrong - in current implementation, mode is an independent flag whose values have shortflags,
+//   but in preferred implementation, mode is a constraint placed on a collection of boolean flags
+// Ideally modes should be their own flags like (--bright, --dark, --dim) or (-b,-d,-m)
+// So declare them as bool flags
+// BUT - we can then have an operation like `Parser{}.Constrain([]string{"bright", "dark", "dim"}`
+//   constraining the boolean flags such that no two can be active at once during parsing
 
 type def_Mode struct {
 	name    string
