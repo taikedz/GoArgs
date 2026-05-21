@@ -29,8 +29,8 @@ type Parser struct {
 	// Non-flag tokens in the arguments
 	positionals []string
 	// All tokens found after the first instance of `--`
-	passdown_args []string
-    mutually_exclusive [][]string
+	passdown_args      []string
+	mutually_exclusive [][]string
 }
 
 /*
@@ -43,13 +43,13 @@ func NewParser(helptext string) Parser {
 	p.shortnames = make(map[rune]t_VarDef)
 	p.helptext = helptext
 	p.require_flagdefs = true
-    p.mutually_exclusive = make([][]string)
+	p.mutually_exclusive = [][]string{}
 	return p
 }
 
 func (p *Parser) MakeMutuallyExclusive(name_list []string) {
-    // FIXME : unusued, see Parse()
-    p.mutually_exclusive = append(p.mutually_exclusive, name_list)
+	// FIXME : unusued, see Parse()
+	p.mutually_exclusive = append(p.mutually_exclusive, name_list)
 }
 
 // Determine whether flags need to be defined. If false, treat unrecognised flags as
@@ -149,7 +149,7 @@ func (p *Parser) Parse(args []string) error {
 		var nextVal *string = nil
 		var retain_token = true
 
-        // FIXME/TODO : track constrained names, cause error when mutually exclusive names are used
+		// FIXME/TODO : track constrained names, cause error when mutually exclusive names are used
 
 		if len(token) >= 2 && token[:2] == "--" {
 			longname := token[2:]
